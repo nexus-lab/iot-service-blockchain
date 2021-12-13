@@ -1,0 +1,11 @@
+{
+  "id": "333195b5-67a5-48ad-bb9a-3d8107ba0778",
+  "time": "2021-12-12T17:38:00-05:00",
+  "service": {
+    "name": "service1",
+    "organizationId": "Org1MSP",
+    "deviceId": "eDUwOTo6Q049dXNlcjEsT1U9Y2xpZW50LE89SHlwZXJsZWRnZXIsU1Q9Tm9ydGggQ2Fyb2xpbmEsQz1VUzo6Q049Y2Eub3JnMS5leGFtcGxlLmNvbSxPPW9yZzEuZXhhbXBsZS5jb20sTD1EdXJoYW0sU1Q9Tm9ydGggQ2Fyb2xpbmEsQz1VUw=="
+  },
+  "method": "GET",
+  "arguments": []
+}

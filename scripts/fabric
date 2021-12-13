@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PROJECT_ROOT="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"/.. &> /dev/null && pwd )"
+
+FABRIC_VERSION="${FABRIC_VERSION:-2.4.0}"
+FABRIC_CA_VERSION="${FABRIC_CA_VERSION:-1.5.2}"
+FABRIC_ROOT=${FABRIC_ROOT:-$PROJECT_ROOT/.fabric}
+
+BLOCKCHAIN_EXPLORER_VERSION=${BLOCKCHAIN_EXPLORER_VERSION:-1.1.8}
+BLOCKCHAIN_EXPLORER_ROOT=${BLOCKCHAIN_EXPLORER_ROOT:-$PROJECT_ROOT/.explorer}
+
+FABRIC_CHANNEL=mychannel
+FABRIC_CHAINCODE_NAME=iotservice
+
+function downloadBlockchainExplorer() {
+    URI_ROOT="https://raw.githubusercontent.com/hyperledger/blockchain-explorer/v${BLOCKCHAIN_EXPLORER_VERSION}"
+
+    mkdir -p ${BLOCKCHAIN_EXPLORER_ROOT}
+    cd ${BLOCKCHAIN_EXPLORER_ROOT}
+    wget -q --show-progress ${URI_ROOT}/examples/net1/config.json
+    wget -q --show-progress ${URI_ROOT}/examples/net1/connection-profile/test-network.json -P connection-profile
+    wget -q --show-progress ${URI_ROOT}/docker-compose.yaml
+
+    sed -i 's/name: net_test/name: fabric_test/' docker-compose.yaml
+    sed -i "s/:latest/:${BLOCKCHAIN_EXPLORER_VERSION}/" docker-compose.yaml
+    sed -i 's/\/examples\/net1//' docker-compose.yaml
+    sed -i "s/\/fabric-path\/fabric-samples\/test-network/${FABRIC_ROOT//\//\\/}\/test-network/" docker-compose.yaml
+
+    sed -i "s/mychannel/${FABRIC_CHANNEL}/" connection-profile/test-network.json
+    sed -i "s/User1@org1.example.com-cert.pem/cert.pem/" connection-profile/test-network.json
+
+    cd - &> /dev/null
+}
+
+function downloadFabricSamples() {
+    mkdir -p ${FABRIC_ROOT}
+    cd ${FABRIC_ROOT}
+    curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/v${FABRIC_VERSION}/scripts/bootstrap.sh \
+        | bash -s -- ${FABRIC_VERSION} ${FABRIC_CA_VERSION}
+    mv fabric-samples/bin .
+    mv fabric-samples/config .
+    mv fabric-samples/test-network .
+    rm -rf fabric-samples
+    cd - &> /dev/null
+}
+
+function bringUpNetwork() {
+    cd ${FABRIC_ROOT}/test-network
+    ./network.sh up createChannel -ca -c ${FABRIC_CHANNEL}
+
+    cd ${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore
+    cp * priv_sk
+    
+    cd ${BLOCKCHAIN_EXPLORER_ROOT}
+    docker-compose up -d
+    echo "Blockchain explorer started at http://0.0.0.0:8080 with username 'exploreradmin' and password 'exploreradminpw'."
+
+    cd - &> /dev/null
+}
+
+function bringDownNetwork() {
+    cd ${BLOCKCHAIN_EXPLORER_ROOT}
+    docker-compose down -v
+
+    cd ${FABRIC_ROOT}/test-network
+    ./network.sh down
+
+    cd - &> /dev/null
+}
+
+function deployChaincode() {
+    CHAINCODE_VERSION=${1:-1.0}; if [ ! $# -lt 1 ]; then shift; fi
+    CHAINCODE_SEQUENCE=${1:-1}; if [ ! $# -lt 1 ]; then shift; fi
+
+    cd ${FABRIC_ROOT}/test-network
+    ./network.sh deployCC \
+        -c ${FABRIC_CHANNEL} \
+        -ccl go \
+        -ccn ${FABRIC_CHAINCODE_NAME} \
+        -ccp ${PROJECT_ROOT}/chaincode \
+        -ccv ${CHAINCODE_VERSION} \
+        -ccs ${CHAINCODE_SEQUENCE}
+
+    cd - &> /dev/null
+}
+
+function runAsOrgUser() {
+    FABRIC_ORG=${FABRIC_ORG:-Org1}
+    FABRIC_USER=${FABRIC_USER:-User1}
+    FABRIC_DOMAIN="$(echo ${FABRIC_ORG} | awk '{print tolower($0)}').example.com"
+    FABRIC_ORG_ROOT="${FABRIC_ROOT}/test-network/organizations/peerOrganizations/${FABRIC_DOMAIN}"
+
+    export PATH=${FABRIC_ROOT}/bin:$PATH
+    export FABRIC_CFG_PATH=${FABRIC_ROOT}/config/
+    export CORE_PEER_TLS_ENABLED=true
+    export CORE_PEER_LOCALMSPID="${FABRIC_ORG}MSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=${FABRIC_ORG_ROOT}/peers/peer0.${FABRIC_DOMAIN}/tls/ca.crt
+    export CORE_PEER_MSPCONFIGPATH=${FABRIC_ORG_ROOT}/users/${FABRIC_USER}@${FABRIC_DOMAIN}/msp
+    export CORE_PEER_ADDRESS=localhost:7051
+    
+    "$@"
+}
+
+function queryChaincode() {
+    PAYLOAD=$@
+
+    runAsOrgUser peer chaincode query -C ${FABRIC_CHANNEL} -n ${FABRIC_CHAINCODE_NAME} -c "${PAYLOAD}"
+}
+
+function invokeChaincode() {
+    PAYLOAD=$@
+
+    runAsOrgUser peer chaincode invoke \
+        -o localhost:7050 \
+        -C ${FABRIC_CHANNEL} \
+        -n ${FABRIC_CHAINCODE_NAME} \
+        --ordererTLSHostnameOverride orderer.example.com \
+        --peerAddresses localhost:7051 \
+        --peerAddresses localhost:9051 \
+        --tls \
+        --tlsRootCertFiles "${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" \
+        --tlsRootCertFiles "${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" \
+        --cafile "${FABRIC_ROOT}/test-network/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
+        -c "${PAYLOAD}"
+}
+
+function createOrgUser() {
+    FABRIC_ORG=${1}
+    FABRIC_USER=${2}
+    FABRIC_ORG_LOWER=$(echo ${FABRIC_ORG} | awk '{print tolower($0)}')
+    FABRIC_USER_LOWER=$(echo ${FABRIC_USER} | awk '{print tolower($0)}')
+    FABRIC_USER_PASSWORD="${FABRIC_USER_LOWER}pw"
+    FABRIC_DOMAIN="$(echo ${FABRIC_ORG} | awk '{print tolower($0)}').example.com"
+    FABRIC_ORG_ROOT="${FABRIC_ROOT}/test-network/organizations/peerOrganizations/${FABRIC_DOMAIN}"
+    FABRIC_TLS_CERT="${FABRIC_ROOT}/test-network/organizations/fabric-ca/${FABRIC_ORG_LOWER}/tls-cert.pem"
+
+    FABRIC_CA_SERVER_PORT=7054
+    if [ "$FABRIC_ORG_LOWER" == "org2" ]; then
+        FABRIC_CA_SERVER_PORT=8054
+    fi
+
+    export PATH=${FABRIC_ROOT}/bin:$PATH
+    export FABRIC_CA_CLIENT_HOME=${FABRIC_ORG_ROOT}/
+
+    fabric-ca-client register \
+        --caname "ca-${FABRIC_ORG_LOWER}" \
+        --id.name ${FABRIC_USER_LOWER} \
+        --id.secret ${FABRIC_USER_PASSWORD} \
+        --id.type client \
+        --tls.certfiles ${FABRIC_TLS_CERT}
+
+    fabric-ca-client enroll -u "https://${FABRIC_USER_LOWER}:${FABRIC_USER_PASSWORD}@localhost:${FABRIC_CA_SERVER_PORT}" \
+        --caname "ca-${FABRIC_ORG_LOWER}" \
+        -M "${FABRIC_ORG_ROOT}/users/${FABRIC_USER}@${FABRIC_DOMAIN}/msp" \
+        --tls.certfiles ${FABRIC_TLS_CERT}
+
+    cp "${FABRIC_ORG_ROOT}/msp/config.yaml" "${FABRIC_ORG_ROOT}/users/${FABRIC_USER}@${FABRIC_DOMAIN}/msp/config.yaml"
+}
+
+COMMAND=$1; shift
+
+case $COMMAND in
+    download)
+        downloadFabricSamples
+        downloadBlockchainExplorer
+        ;;
+    network)
+        SUBCOMMAND=$1; shift
+        case $SUBCOMMAND in
+            up)
+                bringUpNetwork
+                ;;
+            down)
+                bringDownNetwork
+                ;;
+        esac
+        ;;
+    chaincode)
+        SUBCOMMAND=$1; shift
+        case $SUBCOMMAND in
+            deploy)
+                deployChaincode $@
+                ;;
+            query)
+                queryChaincode $@
+                ;;
+            invoke)
+                invokeChaincode $@
+                ;;
+        esac
+        ;;
+    user)
+        SUBCOMMAND=$1; shift
+        case $SUBCOMMAND in
+            create)
+                createOrgUser $@
+                ;;
+        esac
+        ;;
+esac
