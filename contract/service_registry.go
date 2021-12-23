@@ -1,0 +1,73 @@
+package contract
+
+import (
+	"github.com/nexus-lab/iot-service-blockchain/common"
+)
+
+// ServiceRegistry core utilities for managing services on the ledger
+type ServiceRegistry struct {
+	stateRegistry StateRegistry
+}
+
+// Register create or update a service in the ledger
+func (r *ServiceRegistry) Register(service *common.Service) error {
+	return r.stateRegistry.PutState(service)
+}
+
+// Get return a service by its organization ID, device ID, and name
+func (r *ServiceRegistry) Get(organizationId string, deviceId string, name string) (*common.Service, error) {
+	state, err := r.stateRegistry.GetState(organizationId, deviceId, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return state.(*common.Service), nil
+}
+
+// GetAll return a list of services by their organization ID and device ID
+func (r *ServiceRegistry) GetAll(organizationId string, deviceId string) ([]*common.Service, error) {
+	states, err := r.stateRegistry.GetStates(organizationId, deviceId)
+	if err != nil {
+		return nil, err
+	}
+
+	services := make([]*common.Service, 0)
+	for _, state := range states {
+		services = append(services, state.(*common.Service))
+	}
+
+	return services, err
+}
+
+// Deregister remove a service from the ledger
+func (r *ServiceRegistry) Deregister(service *common.Service) error {
+	ctx := r.stateRegistry.Ctx.(*TransactionContext)
+
+	// remove related requests and responses
+	pairs, err := ctx.GetServiceBroker().GetAll(service.OrganizationId, service.DeviceId, service.Name)
+	if err != nil {
+		return err
+	}
+	for _, pair := range pairs {
+		if err = ctx.GetServiceBroker().(*ServiceBroker).Remove(pair.Request.Id); err != nil {
+			return err
+		}
+	}
+
+	return r.stateRegistry.RemoveState(service)
+}
+
+// CreateServiceRegistry create a new service registry from transaction context
+func CreateServiceRegistry(ctx TransactionContextInterface) *ServiceRegistry {
+	stateRegistry := new(StateRegistry)
+	stateRegistry.Ctx = ctx
+	stateRegistry.Name = "services"
+	stateRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
+		return common.DeserializeService(data)
+	}
+
+	registry := new(ServiceRegistry)
+	registry.stateRegistry = *stateRegistry
+
+	return registry
+}

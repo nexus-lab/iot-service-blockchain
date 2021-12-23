@@ -1,26 +1,28 @@
 #!/usr/bin/env bash
 
+set -e
+
 function register_device_query() {
     device=$1
-    template='{"Function":"DeviceRegistrySmartContract:RegisterDevice","Args":[""]}'
+    template='{"Function":"device_registry:Register","Args":[""]}'
     echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$device.json | jq -c '. | tostring')"
 }
 
 function register_service_query() {
     service=$1
-    template='{"Function":"ServiceRegistrySmartContract:RegisterService","Args":[""]}'
+    template='{"Function":"service_registry:Register","Args":[""]}'
     echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$service.json | jq -c '. | tostring')"
 }
 
 function request_service_query() {
     request=$1
-    template='{"Function":"ServiceBrokerSmartContract:CreateServiceRequest","Args":[""]}'
+    template='{"Function":"service_broker:Request","Args":[""]}'
     echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$request.json | jq -c '. | tostring')"
 }
 
 function response_service_query() {
     response=$1
-    template='{"Function":"ServiceBrokerSmartContract:CreateServiceResponse","Args":[""]}'
+    template='{"Function":"service_broker:Respond","Args":[""]}'
     echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$response.json | jq -c '. | tostring')"
 }
 
@@ -38,10 +40,10 @@ FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(register_
 
 sleep 2
 
-./scripts/fabric chaincode query "{\"Function\":\"DeviceRegistrySmartContract:GetDevices\",\"Args\":[\"Org1MSP\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"DeviceRegistrySmartContract:GetDevices\",\"Args\":[\"Org2MSP\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"DeviceRegistrySmartContract:GetDevice\",\"Args\":[\"Org1MSP\",${DEVICE1_ID}]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"DeviceRegistrySmartContract:GetDevice\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"device_registry:GetAll\",\"Args\":[\"Org1MSP\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"device_registry:GetAll\",\"Args\":[\"Org2MSP\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"device_registry:Get\",\"Args\":[\"Org1MSP\",${DEVICE1_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"device_registry:Get\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
 
 echo "================== Register Services =================="
 FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(register_service_query service1)"
@@ -49,10 +51,10 @@ FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(register_
 
 sleep 2
 
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetServices\",\"Args\":[\"Org1MSP\",${DEVICE1_ID}]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetServices\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetService\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetService\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:GetAll\",\"Args\":[\"Org1MSP\",${DEVICE1_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:Get\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:Get\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
 
 echo "================== Request Services =================="
 FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(request_service_query request1)"
@@ -60,10 +62,10 @@ FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(request_s
 
 sleep 2
 
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceRequests\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceRequests\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceRequest\",\"Args\":[${REQUEST1_ID}]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceRequest\",\"Args\":[${REQUEST2_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:GetAll\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:Get\",\"Args\":[${REQUEST1_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:Get\",\"Args\":[${REQUEST2_ID}]}" | jq
 
 echo "================== Respond to Requests =================="
 FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(response_service_query response1)"
@@ -71,31 +73,31 @@ FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(response_
 
 sleep 2
 
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceResponses\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceResponses\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceResponse\",\"Args\":[${REQUEST1_ID}]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceResponse\",\"Args\":[${REQUEST2_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:GetAll\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:Get\",\"Args\":[${REQUEST1_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:Get\",\"Args\":[${REQUEST2_ID}]}" | jq
 
 echo "================== Deregister Service 2 =================="
-FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"ServiceRegistrySmartContract:DeregisterService\",\"Args\":[\"service2\"]}"
+FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"service_registry:Deregister\",\"Args\":[\"service2\"]}"
 
 sleep 2
 
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetServices\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
 
 echo "================== Deregister Devices =================="
-FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"DeviceRegistrySmartContract:DeregisterDevice\",\"Args\":[]}"
-FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"DeviceRegistrySmartContract:DeregisterDevice\",\"Args\":[]}"
+FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"device_registry:Deregister\",\"Args\":[]}"
+FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"device_registry:Deregister\",\"Args\":[]}"
 
 sleep 2
 
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceResponses\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceBrokerSmartContract:GetServiceResponses\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:GetAll\",\"Args\":[\"Org1MSP\",${DEVICE1_ID},\"service1\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_broker:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID},\"service2\"]}" | jq
 
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetServices\",\"Args\":[\"Org1MSP\",${DEVICE1_ID}]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"ServiceRegistrySmartContract:GetServices\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:GetAll\",\"Args\":[\"Org1MSP\",${DEVICE1_ID}]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"service_registry:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
 
-./scripts/fabric chaincode query "{\"Function\":\"DeviceRegistrySmartContract:GetDevices\",\"Args\":[\"Org1MSP\"]}" | jq
-./scripts/fabric chaincode query "{\"Function\":\"DeviceRegistrySmartContract:GetDevices\",\"Args\":[\"Org2MSP\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"device_registry:GetAll\",\"Args\":[\"Org1MSP\"]}" | jq
+./scripts/fabric chaincode query "{\"Function\":\"device_registry:GetAll\",\"Args\":[\"Org2MSP\"]}" | jq
 
 cd - &> /dev/null

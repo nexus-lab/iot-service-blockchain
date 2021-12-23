@@ -47,12 +47,18 @@ function downloadFabricSamples() {
 }
 
 function bringUpNetwork() {
+    if [[ ! -d ${FABRIC_ROOT}/test-network ]]; then
+        downloadFabricSamples
+    fi
     cd ${FABRIC_ROOT}/test-network
     ./network.sh up createChannel -ca -c ${FABRIC_CHANNEL}
 
     cd ${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore
     cp * priv_sk
     
+    if [[ ! -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
+        downloadBlockchainExplorer
+    fi
     cd ${BLOCKCHAIN_EXPLORER_ROOT}
     docker-compose up -d
     echo "Blockchain explorer started at http://0.0.0.0:8080 with username 'exploreradmin' and password 'exploreradminpw'."
@@ -61,13 +67,17 @@ function bringUpNetwork() {
 }
 
 function bringDownNetwork() {
-    cd ${BLOCKCHAIN_EXPLORER_ROOT}
-    docker-compose down -v
+    if [[ -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
+        cd ${BLOCKCHAIN_EXPLORER_ROOT}
+        docker-compose down -v
+        cd - &> /dev/null
+    fi
 
-    cd ${FABRIC_ROOT}/test-network
-    ./network.sh down
-
-    cd - &> /dev/null
+    if [[ -d ${FABRIC_ROOT}/test-network ]]; then
+        cd ${FABRIC_ROOT}/test-network
+        ./network.sh down
+        cd - &> /dev/null
+    fi
 }
 
 function deployChaincode() {
