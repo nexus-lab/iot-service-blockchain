@@ -12,6 +12,12 @@ type ServiceRegistry struct {
 
 // Register create or update a service in the ledger
 func (r *ServiceRegistry) Register(service *common.Service) error {
+	// check if device exists
+	_, err := r.ctx.GetDeviceRegistry().Get(service.OrganizationId, service.DeviceId)
+	if err != nil {
+		return err
+	}
+
 	return r.stateRegistry.PutState(service)
 }
 

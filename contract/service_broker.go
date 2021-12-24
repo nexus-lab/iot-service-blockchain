@@ -47,9 +47,16 @@ type ServiceBroker struct {
 
 // Request make a request to an IoT service
 func (b *ServiceBroker) Request(request *common.ServiceRequest) error {
+	// check if service exists
+	service := request.Service
+	_, err := b.ctx.GetServiceRegistry().Get(service.OrganizationId, service.DeviceId, service.Name)
+	if err != nil {
+		return err
+	}
+
 	// check if request already exists
 	request_, err := b.GetRequest(request.Id)
-	if err != nil {
+	if _, ok := err.(*common.NotFoundError); err != nil && !ok {
 		return err
 	}
 	if request_ != nil {
