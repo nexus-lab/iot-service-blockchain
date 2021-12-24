@@ -39,6 +39,7 @@ func deserializeServiceRequestIndex(data []byte) (*serviceRequestIndex, error) {
 
 // ServiceBroker core utilities for managing IoT service requests and responses on the ledger
 type ServiceBroker struct {
+	ctx              *TransactionContext
 	requestRegistry  StateRegistry
 	responseRegistry StateRegistry
 	indexRegistry    StateRegistry
@@ -48,6 +49,9 @@ type ServiceBroker struct {
 func (b *ServiceBroker) Request(request *common.ServiceRequest) error {
 	// check if request already exists
 	request_, err := b.GetRequest(request.Id)
+	if err != nil {
+		return err
+	}
 	if request_ != nil {
 		return fmt.Errorf("Request already exists")
 	}
@@ -80,7 +84,7 @@ func (b *ServiceBroker) Respond(response *common.ServiceResponse) error {
 		return err
 	}
 	if response_ != nil {
-		return fmt.Errorf("Response already exists")
+		return fmt.Errorf("response already exists")
 	}
 
 	return b.responseRegistry.PutState(response)
@@ -162,6 +166,9 @@ func (b *ServiceBroker) Remove(requestId string) error {
 
 	// remove request from global state
 	request, err := b.GetRequest(requestId)
+	if err != nil {
+		return nil
+	}
 	if err = b.requestRegistry.RemoveState(request); err != nil {
 		return err
 	}
@@ -177,29 +184,30 @@ func (b *ServiceBroker) Remove(requestId string) error {
 }
 
 // CreateServiceBroker create a new service broker from transaction context
-func CreateServiceBroker(ctx TransactionContextInterface) *ServiceBroker {
+func CreateServiceBroker(ctx *TransactionContext) *ServiceBroker {
 	requestRegistry := new(StateRegistry)
-	requestRegistry.Ctx = ctx
+	requestRegistry.ctx = ctx
 	requestRegistry.Name = "requests"
 	requestRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
 		return common.DeserializeServiceRequest(data)
 	}
 
 	responseRegistry := new(StateRegistry)
-	responseRegistry.Ctx = ctx
+	responseRegistry.ctx = ctx
 	responseRegistry.Name = "responses"
 	responseRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
 		return common.DeserializeServiceResponse(data)
 	}
 
 	indexRegistry := new(StateRegistry)
-	indexRegistry.Ctx = ctx
+	indexRegistry.ctx = ctx
 	indexRegistry.Name = "request_indices"
 	indexRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
 		return deserializeServiceRequestIndex(data)
 	}
 
 	broker := new(ServiceBroker)
+	broker.ctx = ctx
 	broker.requestRegistry = *requestRegistry
 	broker.responseRegistry = *responseRegistry
 	broker.indexRegistry = *indexRegistry

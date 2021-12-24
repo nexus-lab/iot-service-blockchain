@@ -6,6 +6,7 @@ import (
 
 // DeviceRegistry core utilities for managing devices on the ledger
 type DeviceRegistry struct {
+	ctx           *TransactionContext
 	stateRegistry StateRegistry
 }
 
@@ -41,15 +42,13 @@ func (r *DeviceRegistry) GetAll(organizationId string) ([]*common.Device, error)
 
 // Deregister remove a device from the ledger
 func (r *DeviceRegistry) Deregister(device *common.Device) error {
-	ctx := r.stateRegistry.Ctx.(*TransactionContext)
-
 	// deregister services of the device
-	services, err := ctx.GetServiceRegistry().GetAll(device.OrganizationId, device.Id)
+	services, err := r.ctx.GetServiceRegistry().GetAll(device.OrganizationId, device.Id)
 	if err != nil {
 		return err
 	}
 	for _, service := range services {
-		if err = ctx.GetServiceRegistry().Deregister(service); err != nil {
+		if err = r.ctx.GetServiceRegistry().Deregister(service); err != nil {
 			return err
 		}
 	}
@@ -58,15 +57,16 @@ func (r *DeviceRegistry) Deregister(device *common.Device) error {
 }
 
 // CreateDeviceRegistry create a new device registry from transaction context
-func CreateDeviceRegistry(ctx TransactionContextInterface) *DeviceRegistry {
+func CreateDeviceRegistry(ctx *TransactionContext) *DeviceRegistry {
 	stateRegistry := new(StateRegistry)
-	stateRegistry.Ctx = ctx
+	stateRegistry.ctx = ctx
 	stateRegistry.Name = "devices"
 	stateRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
 		return common.DeserializeDevice(data)
 	}
 
 	registry := new(DeviceRegistry)
+	registry.ctx = ctx
 	registry.stateRegistry = *stateRegistry
 
 	return registry

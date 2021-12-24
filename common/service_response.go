@@ -36,10 +36,10 @@ func (r *ServiceResponse) Serialize() ([]byte, error) {
 // Validate check if the IoT service response properties are valid
 func (r *ServiceResponse) Validate() error {
 	if _, err := uuid.Parse(r.RequestId); err != nil {
-		return fmt.Errorf("Invalid request ID in response definition")
+		return fmt.Errorf("invalid request ID in response definition")
 	}
 	if r.Time.IsZero() {
-		return fmt.Errorf("Missing response time in response definition")
+		return fmt.Errorf("missing response time in response definition")
 	}
 
 	return nil

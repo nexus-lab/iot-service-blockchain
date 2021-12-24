@@ -35,7 +35,7 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 	// check if corresponding request exists
 	request, _ := ctx.GetServiceBroker().(*ServiceBroker).GetRequest(response.RequestId)
 	if request == nil {
-		return fmt.Errorf("Cannot get corresponding request")
+		return fmt.Errorf("cannot get corresponding request")
 	}
 
 	// check if the client creating the response is the client requested for service
@@ -46,7 +46,7 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 		return err
 	}
 	if request.Service.OrganizationId != organizationId || request.Service.DeviceId != deviceId {
-		return fmt.Errorf("Cannot create response from a device other than the requested device")
+		return fmt.Errorf("cannot create response from a device other than the requested device")
 	}
 
 	return ctx.GetServiceBroker().Respond(response)

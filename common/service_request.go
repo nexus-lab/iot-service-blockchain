@@ -39,16 +39,16 @@ func (r *ServiceRequest) Serialize() ([]byte, error) {
 // Validate check if the IoT service request properties are valid
 func (r *ServiceRequest) Validate() error {
 	if _, err := uuid.Parse(r.Id); err != nil {
-		return fmt.Errorf("Invalid request ID in request definition")
+		return fmt.Errorf("invalid request ID in request definition")
 	}
 	if r.Service.OrganizationId == "" || r.Service.DeviceId == "" || r.Service.Name == "" {
-		return fmt.Errorf("Missing requested service in request definition")
+		return fmt.Errorf("missing requested service in request definition")
 	}
 	if r.Method == "" {
-		return fmt.Errorf("Missing request method in request definition")
+		return fmt.Errorf("missing request method in request definition")
 	}
 	if r.Time.IsZero() {
-		return fmt.Errorf("Missing request time in request definition")
+		return fmt.Errorf("missing request time in request definition")
 	}
 
 	return nil

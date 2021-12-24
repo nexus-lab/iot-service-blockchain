@@ -6,6 +6,7 @@ import (
 
 // ServiceRegistry core utilities for managing services on the ledger
 type ServiceRegistry struct {
+	ctx           *TransactionContext
 	stateRegistry StateRegistry
 }
 
@@ -41,15 +42,13 @@ func (r *ServiceRegistry) GetAll(organizationId string, deviceId string) ([]*com
 
 // Deregister remove a service from the ledger
 func (r *ServiceRegistry) Deregister(service *common.Service) error {
-	ctx := r.stateRegistry.Ctx.(*TransactionContext)
-
 	// remove related requests and responses
-	pairs, err := ctx.GetServiceBroker().GetAll(service.OrganizationId, service.DeviceId, service.Name)
+	pairs, err := r.ctx.GetServiceBroker().GetAll(service.OrganizationId, service.DeviceId, service.Name)
 	if err != nil {
 		return err
 	}
 	for _, pair := range pairs {
-		if err = ctx.GetServiceBroker().(*ServiceBroker).Remove(pair.Request.Id); err != nil {
+		if err = r.ctx.GetServiceBroker().(*ServiceBroker).Remove(pair.Request.Id); err != nil {
 			return err
 		}
 	}
@@ -58,15 +57,16 @@ func (r *ServiceRegistry) Deregister(service *common.Service) error {
 }
 
 // CreateServiceRegistry create a new service registry from transaction context
-func CreateServiceRegistry(ctx TransactionContextInterface) *ServiceRegistry {
+func CreateServiceRegistry(ctx *TransactionContext) *ServiceRegistry {
 	stateRegistry := new(StateRegistry)
-	stateRegistry.Ctx = ctx
+	stateRegistry.ctx = ctx
 	stateRegistry.Name = "services"
 	stateRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
 		return common.DeserializeService(data)
 	}
 
 	registry := new(ServiceRegistry)
+	registry.ctx = ctx
 	registry.stateRegistry = *stateRegistry
 
 	return registry

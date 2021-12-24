@@ -37,16 +37,16 @@ func (d *Device) Serialize() ([]byte, error) {
 // Validate check if the device properties are valid
 func (d *Device) Validate() error {
 	if d.Id == "" {
-		return fmt.Errorf("Missing device ID in device definition")
+		return fmt.Errorf("missing device ID in device definition")
 	}
 	if d.OrganizationId == "" {
-		return fmt.Errorf("Missing organization ID in device definition")
+		return fmt.Errorf("missing organization ID in device definition")
 	}
 	if d.Name == "" {
-		return fmt.Errorf("Missing device name in device definition")
+		return fmt.Errorf("missing device name in device definition")
 	}
 	if d.LastUpdateTime.IsZero() {
-		return fmt.Errorf("Missing device last update time in device definition")
+		return fmt.Errorf("missing device last update time in device definition")
 	}
 
 	return nil
