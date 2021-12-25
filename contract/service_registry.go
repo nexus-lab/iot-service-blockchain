@@ -62,8 +62,7 @@ func (r *ServiceRegistry) Deregister(service *common.Service) error {
 	return r.stateRegistry.RemoveState(service)
 }
 
-// CreateServiceRegistry create a new service registry from transaction context
-func CreateServiceRegistry(ctx *TransactionContext) *ServiceRegistry {
+func createServiceRegistry(ctx *TransactionContext) *ServiceRegistry {
 	stateRegistry := new(StateRegistry)
 	stateRegistry.ctx = ctx
 	stateRegistry.Name = "services"

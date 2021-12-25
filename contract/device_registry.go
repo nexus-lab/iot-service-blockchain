@@ -56,8 +56,7 @@ func (r *DeviceRegistry) Deregister(device *common.Device) error {
 	return r.stateRegistry.RemoveState(device)
 }
 
-// CreateDeviceRegistry create a new device registry from transaction context
-func CreateDeviceRegistry(ctx *TransactionContext) *DeviceRegistry {
+func createDeviceRegistry(ctx *TransactionContext) *DeviceRegistry {
 	stateRegistry := new(StateRegistry)
 	stateRegistry.ctx = ctx
 	stateRegistry.Name = "devices"

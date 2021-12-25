@@ -30,7 +30,7 @@ type TransactionContext struct {
 // GetDeviceRegistry get the device registry instance
 func (c *TransactionContext) GetDeviceRegistry() common.DeviceRegistryInterface {
 	if c.deviceRegistry == nil {
-		c.deviceRegistry = CreateDeviceRegistry(c)
+		c.deviceRegistry = createDeviceRegistry(c)
 	}
 
 	return c.deviceRegistry
@@ -39,7 +39,7 @@ func (c *TransactionContext) GetDeviceRegistry() common.DeviceRegistryInterface 
 // GetServiceRegistry get the device registry instance
 func (c *TransactionContext) GetServiceRegistry() common.ServiceRegistryInterface {
 	if c.serviceRegistry == nil {
-		c.serviceRegistry = CreateServiceRegistry(c)
+		c.serviceRegistry = createServiceRegistry(c)
 	}
 
 	return c.serviceRegistry
@@ -48,7 +48,7 @@ func (c *TransactionContext) GetServiceRegistry() common.ServiceRegistryInterfac
 // GetServiceBroker get the device broker instance
 func (c *TransactionContext) GetServiceBroker() common.ServiceBrokerInterface {
 	if c.serviceBroker == nil {
-		c.serviceBroker = CreateServiceBroker(c)
+		c.serviceBroker = createServiceBroker(c)
 	}
 
 	return c.serviceBroker

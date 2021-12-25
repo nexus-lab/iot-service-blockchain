@@ -190,8 +190,7 @@ func (b *ServiceBroker) Remove(requestId string) error {
 	return b.indexRegistry.RemoveState(index)
 }
 
-// CreateServiceBroker create a new service broker from transaction context
-func CreateServiceBroker(ctx *TransactionContext) *ServiceBroker {
+func createServiceBroker(ctx *TransactionContext) *ServiceBroker {
 	requestRegistry := new(StateRegistry)
 	requestRegistry.ctx = ctx
 	requestRegistry.Name = "requests"
