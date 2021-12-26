@@ -22,9 +22,9 @@ type TransactionContextInterface interface {
 // TransactionContext an implementation of TransactionContextInterface
 type TransactionContext struct {
 	contractapi.TransactionContext
-	deviceRegistry  *DeviceRegistry
-	serviceRegistry *ServiceRegistry
-	serviceBroker   *ServiceBroker
+	deviceRegistry  common.DeviceRegistryInterface
+	serviceRegistry common.ServiceRegistryInterface
+	serviceBroker   common.ServiceBrokerInterface
 }
 
 // GetDeviceRegistry get the device registry instance

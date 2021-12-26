@@ -22,4 +22,7 @@ type ServiceBrokerInterface interface {
 
 	// GetAll return a list of IoT service requests and their responses by their organization ID, device ID, and service name
 	GetAll(organizationId string, deviceId string, serviceName string) ([]*ServiceRequestResponse, error)
+
+	// Remove remove a (request, response) pair from the ledger
+	Remove(requestId string) error
 }

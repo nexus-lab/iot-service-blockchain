@@ -6,8 +6,8 @@ import (
 
 // ServiceRegistry core utilities for managing services on the ledger
 type ServiceRegistry struct {
-	ctx           *TransactionContext
-	stateRegistry StateRegistry
+	ctx           TransactionContextInterface
+	stateRegistry StateRegistryInterface
 }
 
 // Register create or update a service in the ledger
@@ -54,7 +54,7 @@ func (r *ServiceRegistry) Deregister(service *common.Service) error {
 		return err
 	}
 	for _, pair := range pairs {
-		if err = r.ctx.GetServiceBroker().(*ServiceBroker).Remove(pair.Request.Id); err != nil {
+		if err = r.ctx.GetServiceBroker().Remove(pair.Request.Id); err != nil {
 			return err
 		}
 	}
@@ -62,7 +62,7 @@ func (r *ServiceRegistry) Deregister(service *common.Service) error {
 	return r.stateRegistry.RemoveState(service)
 }
 
-func createServiceRegistry(ctx *TransactionContext) *ServiceRegistry {
+func createServiceRegistry(ctx TransactionContextInterface) *ServiceRegistry {
 	stateRegistry := new(StateRegistry)
 	stateRegistry.ctx = ctx
 	stateRegistry.Name = "services"
@@ -72,7 +72,7 @@ func createServiceRegistry(ctx *TransactionContext) *ServiceRegistry {
 
 	registry := new(ServiceRegistry)
 	registry.ctx = ctx
-	registry.stateRegistry = *stateRegistry
+	registry.stateRegistry = stateRegistry
 
 	return registry
 }

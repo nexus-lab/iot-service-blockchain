@@ -33,9 +33,9 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 	}
 
 	// check if corresponding request exists
-	request, _ := ctx.GetServiceBroker().(*ServiceBroker).GetRequest(response.RequestId)
-	if request == nil {
-		return fmt.Errorf("cannot get corresponding request")
+	pair, err := ctx.GetServiceBroker().Get(response.RequestId)
+	if err != nil {
+		return err
 	}
 
 	// check if the client creating the response is the client requested for service
@@ -45,7 +45,7 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
 		return err
 	}
-	if request.Service.OrganizationId != organizationId || request.Service.DeviceId != deviceId {
+	if pair.Request.Service.OrganizationId != organizationId || pair.Request.Service.DeviceId != deviceId {
 		return fmt.Errorf("cannot create response from a device other than the requested device")
 	}
 
@@ -60,4 +60,29 @@ func (s *ServiceBrokerSmartContract) Get(ctx TransactionContextInterface, reques
 // GetAll return a list of IoT service requests and their responses by their organization ID, device ID, and service name
 func (s *ServiceBrokerSmartContract) GetAll(ctx TransactionContextInterface, organizationId string, deviceId string, serviceName string) ([]*common.ServiceRequestResponse, error) {
 	return ctx.GetServiceBroker().GetAll(organizationId, deviceId, serviceName)
+}
+
+// Remove remove a (request, response) pair from the ledger
+func (s *ServiceBrokerSmartContract) Remove(ctx TransactionContextInterface, requestId string) error {
+	var err error
+	var organizationId, deviceId string
+
+	// check if corresponding request exists
+	pair, err := ctx.GetServiceBroker().Get(requestId)
+	if err != nil {
+		return err
+	}
+
+	// check if the client creating the response is the client requested for service
+	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
+		return err
+	}
+	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
+		return err
+	}
+	if pair.Request.Service.OrganizationId != organizationId || pair.Request.Service.DeviceId != deviceId {
+		return fmt.Errorf("cannot remove response from a device other than the requested device")
+	}
+
+	return ctx.GetServiceBroker().Remove(requestId)
 }

@@ -12,21 +12,21 @@ import (
 // StateRegistryInterface core utilities for managing a list of ledger states
 type StateRegistryInterface interface {
 	// PutState create or update a state in the ledger
-	PutState(common.StateInterface) error
+	PutState(state common.StateInterface) error
 
 	// GetState return a state by its key components
-	GetState(...string) (common.StateInterface, error)
+	GetState(keyComponents ...string) (common.StateInterface, error)
 
 	// GetStates return a list of states by key components
-	GetStates(...string) ([]common.StateInterface, error)
+	GetStates(keyComponents ...string) ([]common.StateInterface, error)
 
 	// RemoveState remove a state from the ledger
-	RemoveState(common.StateInterface) error
+	RemoveState(state common.StateInterface) error
 }
 
 // StateRegistry default implementations of StateRegistryInterface
 type StateRegistry struct {
-	ctx *TransactionContext
+	ctx TransactionContextInterface
 
 	// Name name of the state list
 	Name string

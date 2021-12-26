@@ -39,10 +39,10 @@ func deserializeServiceRequestIndex(data []byte) (*serviceRequestIndex, error) {
 
 // ServiceBroker core utilities for managing IoT service requests and responses on the ledger
 type ServiceBroker struct {
-	ctx              *TransactionContext
-	requestRegistry  StateRegistry
-	responseRegistry StateRegistry
-	indexRegistry    StateRegistry
+	ctx              TransactionContextInterface
+	requestRegistry  StateRegistryInterface
+	responseRegistry StateRegistryInterface
+	indexRegistry    StateRegistryInterface
 }
 
 // Request make a request to an IoT service
@@ -55,7 +55,7 @@ func (b *ServiceBroker) Request(request *common.ServiceRequest) error {
 	}
 
 	// check if request already exists
-	request_, err := b.GetRequest(request.Id)
+	request_, err := b.getRequest(request.Id)
 	if _, ok := err.(*common.NotFoundError); err != nil && !ok {
 		return err
 	}
@@ -80,13 +80,13 @@ func (b *ServiceBroker) Request(request *common.ServiceRequest) error {
 // Respond respond to an IoT service request
 func (b *ServiceBroker) Respond(response *common.ServiceResponse) error {
 	// check if the request exists
-	_, err := b.GetRequest(response.RequestId)
+	_, err := b.getRequest(response.RequestId)
 	if err != nil {
 		return err
 	}
 
 	// check if response already exists
-	response_, err := b.GetResponse(response.RequestId)
+	response_, err := b.getResponse(response.RequestId)
 	if _, ok := err.(*common.NotFoundError); err != nil && !ok {
 		return err
 	}
@@ -97,8 +97,7 @@ func (b *ServiceBroker) Respond(response *common.ServiceResponse) error {
 	return b.responseRegistry.PutState(response)
 }
 
-// GetRequest return an IoT service request by its ID
-func (b *ServiceBroker) GetRequest(requestId string) (*common.ServiceRequest, error) {
+func (b *ServiceBroker) getRequest(requestId string) (*common.ServiceRequest, error) {
 	request, err := b.requestRegistry.GetState(requestId)
 	if err != nil {
 		return nil, err
@@ -107,8 +106,7 @@ func (b *ServiceBroker) GetRequest(requestId string) (*common.ServiceRequest, er
 	return request.(*common.ServiceRequest), nil
 }
 
-// GetResponse return an IoT service response by its request ID
-func (b *ServiceBroker) GetResponse(requestId string) (*common.ServiceResponse, error) {
+func (b *ServiceBroker) getResponse(requestId string) (*common.ServiceResponse, error) {
 	response, err := b.responseRegistry.GetState(requestId)
 	if err != nil {
 		return nil, err
@@ -119,12 +117,12 @@ func (b *ServiceBroker) GetResponse(requestId string) (*common.ServiceResponse, 
 
 // Get return an IoT service request and its response by the request ID
 func (b *ServiceBroker) Get(requestId string) (*common.ServiceRequestResponse, error) {
-	request, err := b.GetRequest(requestId)
+	request, err := b.getRequest(requestId)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := b.GetResponse(requestId)
+	response, err := b.getResponse(requestId)
 	if _, ok := err.(*common.NotFoundError); err != nil && !ok {
 		return nil, err
 	}
@@ -143,11 +141,11 @@ func (b *ServiceBroker) GetAll(organizationId string, deviceId string, serviceNa
 
 	for _, state := range states {
 		index := state.(*serviceRequestIndex)
-		request, err := b.GetRequest(index.RequestId)
+		request, err := b.getRequest(index.RequestId)
 		if err != nil {
 			return nil, err
 		}
-		response, err := b.GetResponse(index.RequestId)
+		response, err := b.getResponse(index.RequestId)
 		if _, ok := err.(*common.NotFoundError); err != nil && !ok {
 			return nil, err
 		}
@@ -161,7 +159,7 @@ func (b *ServiceBroker) GetAll(organizationId string, deviceId string, serviceNa
 // Remove remove a (request, response) pair from the ledger
 func (b *ServiceBroker) Remove(requestId string) error {
 	// remove response from global state, if exists
-	response, err := b.GetResponse(requestId)
+	response, err := b.getResponse(requestId)
 	if _, ok := err.(*common.NotFoundError); err != nil && !ok {
 		return err
 	}
@@ -172,7 +170,7 @@ func (b *ServiceBroker) Remove(requestId string) error {
 	}
 
 	// remove request from global state
-	request, err := b.GetRequest(requestId)
+	request, err := b.getRequest(requestId)
 	if err != nil {
 		return nil
 	}
@@ -190,7 +188,7 @@ func (b *ServiceBroker) Remove(requestId string) error {
 	return b.indexRegistry.RemoveState(index)
 }
 
-func createServiceBroker(ctx *TransactionContext) *ServiceBroker {
+func createServiceBroker(ctx TransactionContextInterface) *ServiceBroker {
 	requestRegistry := new(StateRegistry)
 	requestRegistry.ctx = ctx
 	requestRegistry.Name = "requests"
@@ -214,9 +212,9 @@ func createServiceBroker(ctx *TransactionContext) *ServiceBroker {
 
 	broker := new(ServiceBroker)
 	broker.ctx = ctx
-	broker.requestRegistry = *requestRegistry
-	broker.responseRegistry = *responseRegistry
-	broker.indexRegistry = *indexRegistry
+	broker.requestRegistry = requestRegistry
+	broker.responseRegistry = responseRegistry
+	broker.indexRegistry = indexRegistry
 
 	return broker
 }

@@ -6,8 +6,8 @@ import (
 
 // DeviceRegistry core utilities for managing devices on the ledger
 type DeviceRegistry struct {
-	ctx           *TransactionContext
-	stateRegistry StateRegistry
+	ctx           TransactionContextInterface
+	stateRegistry StateRegistryInterface
 }
 
 // Register create or update a device in the ledger
@@ -56,7 +56,7 @@ func (r *DeviceRegistry) Deregister(device *common.Device) error {
 	return r.stateRegistry.RemoveState(device)
 }
 
-func createDeviceRegistry(ctx *TransactionContext) *DeviceRegistry {
+func createDeviceRegistry(ctx TransactionContextInterface) *DeviceRegistry {
 	stateRegistry := new(StateRegistry)
 	stateRegistry.ctx = ctx
 	stateRegistry.Name = "devices"
@@ -66,7 +66,7 @@ func createDeviceRegistry(ctx *TransactionContext) *DeviceRegistry {
 
 	registry := new(DeviceRegistry)
 	registry.ctx = ctx
-	registry.stateRegistry = *stateRegistry
+	registry.stateRegistry = stateRegistry
 
 	return registry
 }
