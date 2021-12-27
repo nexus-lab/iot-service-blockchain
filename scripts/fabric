@@ -55,7 +55,7 @@ function bringUpNetwork() {
 
     cd ${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore
     cp * priv_sk
-    
+
     if [[ ! -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
         downloadBlockchainExplorer
     fi
@@ -63,21 +63,32 @@ function bringUpNetwork() {
     docker-compose up -d
     echo "Blockchain explorer started at http://0.0.0.0:8080 with username 'exploreradmin' and password 'exploreradminpw'."
 
+    docker run -d --name=fabric_logspout \
+        --volume=/var/run/docker.sock:/var/run/docker.sock \
+        --publish=0.0.0.0:8081:80 \
+        --network fabric_test \
+        gliderlabs/logspout
+
+    echo "Logspout started at http://0.0.0.0:8081/logs."
+
     cd - &> /dev/null
 }
 
 function bringDownNetwork() {
+    if [[ -d ${FABRIC_ROOT}/test-network ]]; then
+        cd ${FABRIC_ROOT}/test-network
+        ./network.sh down
+        cd - &> /dev/null
+    fi
+
     if [[ -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
         cd ${BLOCKCHAIN_EXPLORER_ROOT}
         docker-compose down -v
         cd - &> /dev/null
     fi
 
-    if [[ -d ${FABRIC_ROOT}/test-network ]]; then
-        cd ${FABRIC_ROOT}/test-network
-        ./network.sh down
-        cd - &> /dev/null
-    fi
+    docker kill fabric_logspout 2> /dev/null 1>&2 || true
+    docker rm fabric_logspout 2> /dev/null 1>&2 || true
 }
 
 function deployChaincode() {
@@ -109,7 +120,7 @@ function runAsOrgUser() {
     export CORE_PEER_TLS_ROOTCERT_FILE=${FABRIC_ORG_ROOT}/peers/peer0.${FABRIC_DOMAIN}/tls/ca.crt
     export CORE_PEER_MSPCONFIGPATH=${FABRIC_ORG_ROOT}/users/${FABRIC_USER}@${FABRIC_DOMAIN}/msp
     export CORE_PEER_ADDRESS=localhost:7051
-    
+
     "$@"
 }
 
