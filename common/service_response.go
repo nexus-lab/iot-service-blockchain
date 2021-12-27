@@ -20,7 +20,7 @@ type ServiceResponse struct {
 	StatusCode int32 `json:"statusCode"`
 
 	// ReturnValue return value of the IoT service response
-	ReturnValue []string `json:"returnValue"`
+	ReturnValue string `json:"returnValue"`
 }
 
 // GetKeyComponents return components that compose the IoT service response key

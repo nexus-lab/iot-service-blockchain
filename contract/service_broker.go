@@ -60,7 +60,7 @@ func (b *ServiceBroker) Request(request *common.ServiceRequest) error {
 		return err
 	}
 	if request_ != nil {
-		return fmt.Errorf("Request already exists")
+		return fmt.Errorf("request already exists")
 	}
 
 	if err = b.requestRegistry.PutState(request); err != nil {
@@ -172,7 +172,7 @@ func (b *ServiceBroker) Remove(requestId string) error {
 	// remove request from global state
 	request, err := b.getRequest(requestId)
 	if err != nil {
-		return nil
+		return err
 	}
 	if err = b.requestRegistry.RemoveState(request); err != nil {
 		return err
