@@ -6,7 +6,8 @@ import (
 	"testing"
 
 	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
-	"github.com/hyperledger/fabric-chaincode-go/shimtest"
+	//lint:ignore SA1019 ignore this
+	"github.com/hyperledger/fabric-chaincode-go/shimtest" //nolint:staticcheck // SA1019 ignore this
 	"github.com/nexus-lab/iot-service-blockchain/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -120,7 +121,7 @@ func (s *StateRegistryTestSuite) TestPutState() {
 func (s *StateRegistryTestSuite) TestGetState() {
 	key, _ := s.stub.CreateCompositeKey(s.registry.Name, []string{"123456"})
 	s.stub.MockTransactionStart("GetState")
-	s.stub.PutState(key, []byte("{\"Id\":\"123456\",\"Value\":1}"))
+	_ = s.stub.PutState(key, []byte("{\"Id\":\"123456\",\"Value\":1}"))
 	s.stub.MockTransactionEnd("GetState")
 
 	state, err := s.registry.GetState("1")
@@ -138,9 +139,9 @@ func (s *StateRegistryTestSuite) TestGetStates() {
 	key2, _ := s.stub.CreateCompositeKey(s.registry.Name, []string{"A", "C"})
 	key3, _ := s.stub.CreateCompositeKey(s.registry.Name, []string{"A", "D"})
 	s.stub.MockTransactionStart("GetStates")
-	s.stub.PutState(key1, []byte("{\"Id\":\"1\",\"Value\":1}"))
-	s.stub.PutState(key2, []byte("{\"Id\":\"2\",\"Value\":2}"))
-	s.stub.PutState(key3, []byte("{\"Id\":\"3\",\"Value\":3}"))
+	_ = s.stub.PutState(key1, []byte("{\"Id\":\"1\",\"Value\":1}"))
+	_ = s.stub.PutState(key2, []byte("{\"Id\":\"2\",\"Value\":2}"))
+	_ = s.stub.PutState(key3, []byte("{\"Id\":\"3\",\"Value\":3}"))
 	s.stub.MockTransactionEnd("GetStates")
 
 	states, err := s.registry.GetStates("B")
@@ -158,7 +159,7 @@ func (s *StateRegistryTestSuite) TestGetStates() {
 func (s *StateRegistryTestSuite) TestRemoveState() {
 	key, _ := s.stub.CreateCompositeKey(s.registry.Name, []string{"123456"})
 	s.stub.MockTransactionStart("RemoveState")
-	s.stub.PutState(key, []byte("{\"Id\":\"123456\",\"Value\":1}"))
+	_ = s.stub.PutState(key, []byte("{\"Id\":\"123456\",\"Value\":1}"))
 	s.stub.MockTransactionEnd("RemoveState")
 
 	s.stub.MockTransactionStart("RemoveState")
