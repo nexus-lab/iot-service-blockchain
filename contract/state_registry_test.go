@@ -41,25 +41,25 @@ type MockStateRegistry struct {
 	mock.Mock
 }
 
-func (r *MockStateRegistry) PutState(state common.StateInterface) error {
+func (r *MockStateRegistry) PutState(state StateInterface) error {
 	args := r.Called(state)
 	return args.Error(0)
 }
 
-func (r *MockStateRegistry) GetState(keyComponents ...string) (common.StateInterface, error) {
+func (r *MockStateRegistry) GetState(keyComponents ...string) (StateInterface, error) {
 	args := r.Called(keyComponents)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(common.StateInterface), args.Error(1)
+	return args.Get(0).(StateInterface), args.Error(1)
 }
 
-func (r *MockStateRegistry) GetStates(keyComponents ...string) ([]common.StateInterface, error) {
+func (r *MockStateRegistry) GetStates(keyComponents ...string) ([]StateInterface, error) {
 	args := r.Called(keyComponents)
-	return args.Get(0).([]common.StateInterface), args.Error(1)
+	return args.Get(0).([]StateInterface), args.Error(1)
 }
 
-func (r *MockStateRegistry) RemoveState(state common.StateInterface) error {
+func (r *MockStateRegistry) RemoveState(state StateInterface) error {
 	args := r.Called(state)
 	return args.Error(0)
 }
@@ -81,7 +81,7 @@ func (s *StateRegistryTestSuite) SetupTest() {
 	s.registry = &StateRegistry{
 		ctx:  ctx,
 		Name: "states",
-		Deserialize: func(data []byte) (common.StateInterface, error) {
+		Deserialize: func(data []byte) (StateInterface, error) {
 			st := new(mockState)
 
 			if err := json.Unmarshal(data, st); err != nil {

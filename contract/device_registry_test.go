@@ -64,14 +64,14 @@ func (s *DeviceRegistryTestSuite) TestGet() {
 	deviceRegistry.stateRegistry = stateRegistry
 
 	device := new(common.Device)
-	stateRegistry.On("GetState", []string{"Org1MSP", "Device1Id"}).Return(device, nil)
+	stateRegistry.On("GetState", []string{"Org1MSP", "Device1"}).Return(device, nil)
 	stateRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 
-	result, err := deviceRegistry.Get("Org1MSP", "Device1Id")
+	result, err := deviceRegistry.Get("Org1MSP", "Device1")
 	assert.Equal(s.T(), device, result, "should return the correct device")
 	assert.Nil(s.T(), err, "should return no error")
 
-	result, err = deviceRegistry.Get("Org2MSP", "Device2Id")
+	result, err = deviceRegistry.Get("Org2MSP", "Device2")
 	assert.Nil(s.T(), result, "should return no device")
 	assert.IsType(s.T(), new(common.NotFoundError), err, "should return not found error")
 }
@@ -83,9 +83,9 @@ func (s *DeviceRegistryTestSuite) TestGetAll() {
 	deviceRegistry.ctx = new(MockTransactionContext)
 	deviceRegistry.stateRegistry = stateRegistry
 
-	devices := []common.StateInterface{new(common.Device), new(common.Device)}
+	devices := []StateInterface{new(common.Device), new(common.Device)}
 	stateRegistry.On("GetStates", []string{"Org1MSP"}).Return(devices, nil)
-	stateRegistry.On("GetStates", mock.Anything).Return([]common.StateInterface{}, nil)
+	stateRegistry.On("GetStates", mock.Anything).Return([]StateInterface{}, nil)
 
 	results, err := deviceRegistry.GetAll("Org1MSP")
 	assert.Equal(s.T(), len(devices), len(results), "should return the correct number of devices")
@@ -111,12 +111,12 @@ func (s *DeviceRegistryTestSuite) TestDeregister() {
 	deviceRegistry.stateRegistry = stateRegistry
 
 	device := new(common.Device)
-	device.Id = "Device1Id"
+	device.Id = "Device1"
 	device.OrganizationId = "Org1MSP"
 
 	services := []*common.Service{new(common.Service), new(common.Service)}
 
-	serviceRegistry.On("GetAll", "Org1MSP", "Device1Id").Return(services, nil)
+	serviceRegistry.On("GetAll", "Org1MSP", "Device1").Return(services, nil)
 	serviceRegistry.On("Deregister", mock.AnythingOfType("*common.Service")).Return(nil)
 	stateRegistry.On("RemoveState", device).Return(nil)
 

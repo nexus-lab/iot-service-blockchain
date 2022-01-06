@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
-	"github.com/nexus-lab/iot-service-blockchain/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -14,26 +14,6 @@ import (
 type MockClientIdentity struct {
 	Id    string
 	MspId string
-}
-
-type MockTransactionContext struct {
-	contractapi.TransactionContext
-	clientId        *MockClientIdentity
-	deviceRegistry  common.DeviceRegistryInterface
-	serviceRegistry common.ServiceRegistryInterface
-	serviceBroker   common.ServiceBrokerInterface
-}
-
-func (c *MockTransactionContext) GetDeviceRegistry() common.DeviceRegistryInterface {
-	return c.deviceRegistry
-}
-
-func (c *MockTransactionContext) GetServiceRegistry() common.ServiceRegistryInterface {
-	return c.serviceRegistry
-}
-
-func (c *MockTransactionContext) GetServiceBroker() common.ServiceBrokerInterface {
-	return c.serviceBroker
 }
 
 func (i *MockClientIdentity) GetID() (string, error) {
@@ -56,11 +36,56 @@ func (i *MockClientIdentity) GetX509Certificate() (*x509.Certificate, error) {
 	return nil, nil
 }
 
+type MockChaincodeStub struct {
+	shim.ChaincodeStub
+	eventName    string
+	eventPayload []byte
+}
+
+func (s *MockChaincodeStub) SetEvent(name string, payload []byte) error {
+	s.eventName = name
+	s.eventPayload = payload
+	return nil
+}
+
+func (s *MockChaincodeStub) ResetEvent() {
+	s.eventName = ""
+	s.eventPayload = nil
+}
+
+type MockTransactionContext struct {
+	contractapi.TransactionContext
+	clientId        *MockClientIdentity
+	stub            *MockChaincodeStub
+	deviceRegistry  DeviceRegistryInterface
+	serviceRegistry ServiceRegistryInterface
+	serviceBroker   ServiceBrokerInterface
+}
+
+func (c *MockTransactionContext) GetDeviceRegistry() DeviceRegistryInterface {
+	return c.deviceRegistry
+}
+
+func (c *MockTransactionContext) GetServiceRegistry() ServiceRegistryInterface {
+	return c.serviceRegistry
+}
+
+func (c *MockTransactionContext) GetServiceBroker() ServiceBrokerInterface {
+	return c.serviceBroker
+}
+
 func (c *MockTransactionContext) GetClientIdentity() cid.ClientIdentity {
 	if c.clientId == nil {
-		c.clientId = &MockClientIdentity{Id: "Device1Id", MspId: "Org1MSP"}
+		c.clientId = &MockClientIdentity{Id: "Device1", MspId: "Org1MSP"}
 	}
 	return c.clientId
+}
+
+func (c *MockTransactionContext) GetStub() shim.ChaincodeStubInterface {
+	if c.stub == nil {
+		c.stub = &MockChaincodeStub{}
+	}
+	return c.stub
 }
 
 type TransactionContextTestSuite struct {

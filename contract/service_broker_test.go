@@ -62,7 +62,7 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 		Id: "Request1",
 		Service: common.Service{
 			OrganizationId: "Org1MSP",
-			DeviceId:       "Device1Id",
+			DeviceId:       "Device1",
 			Name:           "Service1",
 		},
 	}
@@ -71,7 +71,7 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 	requestRegistry.On("GetState", mock.Anything).Return(new(common.ServiceRequest), nil)
 	requestRegistry.On("PutState", request).Return(nil)
 	indexRegistry.On("PutState", mock.Anything).Return(nil)
-	serviceRegistry.On("Get", "Org1MSP", "Device1Id", "Service1").Return(new(common.Service), nil)
+	serviceRegistry.On("Get", "Org1MSP", "Device1", "Service1").Return(new(common.Service), nil)
 	serviceRegistry.On("Get", mock.Anything, mock.Anything, mock.Anything).Return(nil, new(common.NotFoundError))
 
 	err := serviceBroker.Request(request)
@@ -87,7 +87,7 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 		Id: "Request1",
 		Service: common.Service{
 			OrganizationId: "Org2MSP",
-			DeviceId:       "Device2Id",
+			DeviceId:       "Device2",
 			Name:           "Service2",
 		},
 	}
@@ -100,7 +100,7 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 		Id: "Request2",
 		Service: common.Service{
 			OrganizationId: "Org1MSP",
-			DeviceId:       "Device1Id",
+			DeviceId:       "Device1",
 			Name:           "Service1",
 		},
 	}
@@ -193,7 +193,7 @@ func (s *ServiceBrokerTestSuite) TestGetAll() {
 	serviceBroker.requestRegistry = requestRegistry
 	serviceBroker.responseRegistry = responseRegistry
 
-	indices := []common.StateInterface{
+	indices := []StateInterface{
 		&serviceRequestIndex{RequestId: "Request1"},
 		&serviceRequestIndex{RequestId: "Request2"},
 	}
@@ -201,15 +201,15 @@ func (s *ServiceBrokerTestSuite) TestGetAll() {
 	request2 := new(common.ServiceRequest)
 	response1 := new(common.ServiceResponse)
 
-	indexRegistry.On("GetStates", []string{"Org1MSP", "Device1Id", "Service1"}).Return(indices, nil)
-	indexRegistry.On("GetStates", mock.Anything).Return([]common.StateInterface{}, nil)
+	indexRegistry.On("GetStates", []string{"Org1MSP", "Device1", "Service1"}).Return(indices, nil)
+	indexRegistry.On("GetStates", mock.Anything).Return([]StateInterface{}, nil)
 	requestRegistry.On("GetState", []string{"Request1"}).Return(request1, nil)
 	requestRegistry.On("GetState", []string{"Request2"}).Return(request2, nil)
 	requestRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 	responseRegistry.On("GetState", []string{"Request1"}).Return(response1, nil)
 	responseRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 
-	results, err := serviceBroker.GetAll("Org1MSP", "Device1Id", "Service1")
+	results, err := serviceBroker.GetAll("Org1MSP", "Device1", "Service1")
 	assert.Equal(s.T(), len(indices), len(results), "should return the correct number of requests/responses")
 	assert.Nil(s.T(), err, "should return no error")
 	assert.Equal(s.T(), request1, results[0].Request, "should return the correct request")
@@ -217,7 +217,7 @@ func (s *ServiceBrokerTestSuite) TestGetAll() {
 	assert.Equal(s.T(), request2, results[1].Request, "should return the correct request")
 	assert.Nil(s.T(), results[1].Response, "should return the correct response")
 
-	results, err = serviceBroker.GetAll("Org2MSP", "Device2Id", "Service2")
+	results, err = serviceBroker.GetAll("Org2MSP", "Device2", "Service2")
 	assert.Zero(s.T(), len(results), "should return no device")
 	assert.Nil(s.T(), err, "should return no error")
 }

@@ -7,6 +7,24 @@ import (
 	"github.com/nexus-lab/iot-service-blockchain/common"
 )
 
+// ServiceBrokerInterface core utilities for managing service requests on ledger
+type ServiceBrokerInterface interface {
+	// Request make a request to an IoT service
+	Request(request *common.ServiceRequest) error
+
+	// Respond respond to an IoT service request
+	Respond(response *common.ServiceResponse) error
+
+	// Get return an IoT service request and its response by the request ID
+	Get(requestId string) (*common.ServiceRequestResponse, error)
+
+	// GetAll return a list of IoT service requests and their responses by their organization ID, device ID, and service name
+	GetAll(organizationId string, deviceId string, serviceName string) ([]*common.ServiceRequestResponse, error)
+
+	// Remove remove a (request, response) pair from the ledger
+	Remove(requestId string) error
+}
+
 // Dummy index object
 type serviceRequestIndex struct {
 	OrganizationId string `json:"organizationId"`
@@ -192,21 +210,21 @@ func createServiceBroker(ctx TransactionContextInterface) *ServiceBroker {
 	requestRegistry := new(StateRegistry)
 	requestRegistry.ctx = ctx
 	requestRegistry.Name = "requests"
-	requestRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
+	requestRegistry.Deserialize = func(data []byte) (StateInterface, error) {
 		return common.DeserializeServiceRequest(data)
 	}
 
 	responseRegistry := new(StateRegistry)
 	responseRegistry.ctx = ctx
 	responseRegistry.Name = "responses"
-	responseRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
+	responseRegistry.Deserialize = func(data []byte) (StateInterface, error) {
 		return common.DeserializeServiceResponse(data)
 	}
 
 	indexRegistry := new(StateRegistry)
 	indexRegistry.ctx = ctx
 	indexRegistry.Name = "request_indices"
-	indexRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
+	indexRegistry.Deserialize = func(data []byte) (StateInterface, error) {
 		return deserializeServiceRequestIndex(data)
 	}
 

@@ -2,7 +2,6 @@ package contract
 
 import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
-	"github.com/nexus-lab/iot-service-blockchain/common"
 )
 
 // TransactionContextInterface extends the default transaction context with specific services
@@ -10,25 +9,25 @@ type TransactionContextInterface interface {
 	contractapi.TransactionContextInterface
 
 	// GetDeviceRegistry get the default instance of device registry
-	GetDeviceRegistry() common.DeviceRegistryInterface
+	GetDeviceRegistry() DeviceRegistryInterface
 
 	// GetServiceRegistry get the default instance of service registry
-	GetServiceRegistry() common.ServiceRegistryInterface
+	GetServiceRegistry() ServiceRegistryInterface
 
 	// GetServiceBroker get the default instance of service broker
-	GetServiceBroker() common.ServiceBrokerInterface
+	GetServiceBroker() ServiceBrokerInterface
 }
 
 // TransactionContext an implementation of TransactionContextInterface
 type TransactionContext struct {
 	contractapi.TransactionContext
-	deviceRegistry  common.DeviceRegistryInterface
-	serviceRegistry common.ServiceRegistryInterface
-	serviceBroker   common.ServiceBrokerInterface
+	deviceRegistry  DeviceRegistryInterface
+	serviceRegistry ServiceRegistryInterface
+	serviceBroker   ServiceBrokerInterface
 }
 
 // GetDeviceRegistry get the device registry instance
-func (c *TransactionContext) GetDeviceRegistry() common.DeviceRegistryInterface {
+func (c *TransactionContext) GetDeviceRegistry() DeviceRegistryInterface {
 	if c.deviceRegistry == nil {
 		c.deviceRegistry = createDeviceRegistry(c)
 	}
@@ -37,7 +36,7 @@ func (c *TransactionContext) GetDeviceRegistry() common.DeviceRegistryInterface 
 }
 
 // GetServiceRegistry get the device registry instance
-func (c *TransactionContext) GetServiceRegistry() common.ServiceRegistryInterface {
+func (c *TransactionContext) GetServiceRegistry() ServiceRegistryInterface {
 	if c.serviceRegistry == nil {
 		c.serviceRegistry = createServiceRegistry(c)
 	}
@@ -46,7 +45,7 @@ func (c *TransactionContext) GetServiceRegistry() common.ServiceRegistryInterfac
 }
 
 // GetServiceBroker get the device broker instance
-func (c *TransactionContext) GetServiceBroker() common.ServiceBrokerInterface {
+func (c *TransactionContext) GetServiceBroker() ServiceBrokerInterface {
 	if c.serviceBroker == nil {
 		c.serviceBroker = createServiceBroker(c)
 	}

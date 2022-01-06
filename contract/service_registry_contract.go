@@ -33,7 +33,16 @@ func (s *ServiceRegistrySmartContract) Register(ctx TransactionContextInterface,
 		return fmt.Errorf("cannot register a service other than one of the requested device")
 	}
 
-	return ctx.GetServiceRegistry().Register(service)
+	err = ctx.GetServiceRegistry().Register(service)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("service://%s/%s/%s/register", service.OrganizationId, service.DeviceId, service.Name)
+		payload, _ := service.Serialize()
+		ctx.GetStub().SetEvent(event, payload)
+	}
+
+	return err
 }
 
 // Get return a device by its organization ID, device ID, and name
@@ -67,5 +76,14 @@ func (s *ServiceRegistrySmartContract) Deregister(ctx TransactionContextInterfac
 		return fmt.Errorf("cannot deregister a service other than one of the requested device")
 	}
 
-	return ctx.GetServiceRegistry().Deregister(service)
+	err = ctx.GetServiceRegistry().Deregister(service)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("service://%s/%s/%s/deregister", service.OrganizationId, service.DeviceId, service.Name)
+		payload, _ := service.Serialize()
+		ctx.GetStub().SetEvent(event, payload)
+	}
+
+	return err
 }

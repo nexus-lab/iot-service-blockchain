@@ -33,7 +33,16 @@ func (s *DeviceRegistrySmartContract) Register(ctx TransactionContextInterface, 
 		return fmt.Errorf("cannot register a device other than the requested device")
 	}
 
-	return ctx.GetDeviceRegistry().Register(device)
+	err = ctx.GetDeviceRegistry().Register(device)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("device://%s/%s/register", device.OrganizationId, device.Id)
+		payload, _ := device.Serialize()
+		ctx.GetStub().SetEvent(event, payload)
+	}
+
+	return err
 }
 
 // Get return a device by its organization ID and device ID
@@ -67,5 +76,14 @@ func (s *DeviceRegistrySmartContract) Deregister(ctx TransactionContextInterface
 		return fmt.Errorf("cannot deregister a device other than the requested device")
 	}
 
-	return ctx.GetDeviceRegistry().Deregister(device)
+	err = ctx.GetDeviceRegistry().Deregister(device)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("device://%s/%s/deregister", device.OrganizationId, device.Id)
+		payload, _ := device.Serialize()
+		ctx.GetStub().SetEvent(event, payload)
+	}
+
+	return err
 }

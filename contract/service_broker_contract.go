@@ -19,7 +19,16 @@ func (s *ServiceBrokerSmartContract) Request(ctx TransactionContextInterface, da
 		return err
 	}
 
-	return ctx.GetServiceBroker().Request(request)
+	err = ctx.GetServiceBroker().Request(request)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("request://%s/%s/%s/%s/request", request.Service.OrganizationId, request.Service.DeviceId, request.Service.Name, request.Id)
+		payload, _ := request.Serialize()
+		ctx.GetStub().SetEvent(event, payload)
+	}
+
+	return err
 }
 
 // Respond respond to an IoT service request
@@ -38,18 +47,29 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 		return err
 	}
 
-	// check if the client creating the response is the client requested for service
 	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
 		return err
 	}
 	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
 		return err
 	}
-	if pair.Request.Service.OrganizationId != organizationId || pair.Request.Service.DeviceId != deviceId {
+
+	// check if the client creating the response is the client requested for service
+	request := pair.Request
+	if request.Service.OrganizationId != organizationId || request.Service.DeviceId != deviceId {
 		return fmt.Errorf("cannot create response from a device other than the requested device")
 	}
 
-	return ctx.GetServiceBroker().Respond(response)
+	err = ctx.GetServiceBroker().Respond(response)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("request://%s/%s/%s/%s/respond", request.Service.OrganizationId, request.Service.DeviceId, request.Service.Name, request.Id)
+		payload, _ := response.Serialize()
+		ctx.GetStub().SetEvent(event, payload)
+	}
+
+	return err
 }
 
 // Get return an IoT service request and its response by the request ID
@@ -73,16 +93,26 @@ func (s *ServiceBrokerSmartContract) Remove(ctx TransactionContextInterface, req
 		return err
 	}
 
-	// check if the client creating the response is the client requested for service
 	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
 		return err
 	}
 	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
 		return err
 	}
+
+	// check if the client creating the response is the client requested for service
+	request := pair.Request
 	if pair.Request.Service.OrganizationId != organizationId || pair.Request.Service.DeviceId != deviceId {
 		return fmt.Errorf("cannot remove response from a device other than the requested device")
 	}
 
-	return ctx.GetServiceBroker().Remove(requestId)
+	err = ctx.GetServiceBroker().Remove(requestId)
+
+	// notify listening clients of the update
+	if err == nil {
+		event := fmt.Sprintf("request://%s/%s/%s/%s/remove", request.Service.OrganizationId, request.Service.DeviceId, request.Service.Name, request.Id)
+		ctx.GetStub().SetEvent(event, []byte(requestId))
+	}
+
+	return err
 }

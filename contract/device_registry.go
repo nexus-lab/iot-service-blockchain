@@ -4,6 +4,21 @@ import (
 	"github.com/nexus-lab/iot-service-blockchain/common"
 )
 
+// DeviceRegistryInterface core utilities for managing devices on the ledger
+type DeviceRegistryInterface interface {
+	// Register create or update a device in the ledger
+	Register(device *common.Device) error
+
+	// Get return a device by its organization ID and device ID
+	Get(organizationId string, deviceId string) (*common.Device, error)
+
+	// GetAll return a list of devices by their organization ID
+	GetAll(organizationId string) ([]*common.Device, error)
+
+	// Deregister remove a device from the ledger
+	Deregister(device *common.Device) error
+}
+
 // DeviceRegistry core utilities for managing devices on the ledger
 type DeviceRegistry struct {
 	ctx           TransactionContextInterface
@@ -60,7 +75,7 @@ func createDeviceRegistry(ctx TransactionContextInterface) *DeviceRegistry {
 	stateRegistry := new(StateRegistry)
 	stateRegistry.ctx = ctx
 	stateRegistry.Name = "devices"
-	stateRegistry.Deserialize = func(data []byte) (common.StateInterface, error) {
+	stateRegistry.Deserialize = func(data []byte) (StateInterface, error) {
 		return common.DeserializeDevice(data)
 	}
 

@@ -9,19 +9,31 @@ import (
 	"github.com/nexus-lab/iot-service-blockchain/common"
 )
 
+// StateInterface common ledger state interface
+type StateInterface interface {
+	// GetKeyComponents return components that compose the state key
+	GetKeyComponents() []string
+
+	// Serialize transform current state object to JSON string
+	Serialize() ([]byte, error)
+
+	// Validate check if the state properties are valid
+	Validate() error
+}
+
 // StateRegistryInterface core utilities for managing a list of ledger states
 type StateRegistryInterface interface {
 	// PutState create or update a state in the ledger
-	PutState(state common.StateInterface) error
+	PutState(state StateInterface) error
 
 	// GetState return a state by its key components
-	GetState(keyComponents ...string) (common.StateInterface, error)
+	GetState(keyComponents ...string) (StateInterface, error)
 
 	// GetStates return a list of states by key components
-	GetStates(keyComponents ...string) ([]common.StateInterface, error)
+	GetStates(keyComponents ...string) ([]StateInterface, error)
 
 	// RemoveState remove a state from the ledger
-	RemoveState(state common.StateInterface) error
+	RemoveState(state StateInterface) error
 }
 
 // StateRegistry default implementations of StateRegistryInterface
@@ -32,11 +44,11 @@ type StateRegistry struct {
 	Name string
 
 	// Deserialize create a new state instance from its JSON representation
-	Deserialize func([]byte) (common.StateInterface, error)
+	Deserialize func([]byte) (StateInterface, error)
 }
 
 // PutState create or update a state in the ledger
-func (r *StateRegistry) PutState(state common.StateInterface) error {
+func (r *StateRegistry) PutState(state StateInterface) error {
 	err := state.Validate()
 	if err != nil {
 		return err
@@ -58,7 +70,7 @@ func (r *StateRegistry) PutState(state common.StateInterface) error {
 }
 
 // GetState return a state by its key
-func (r *StateRegistry) GetState(key ...string) (common.StateInterface, error) {
+func (r *StateRegistry) GetState(key ...string) (StateInterface, error) {
 	key_, err := r.ctx.GetStub().CreateCompositeKey(r.Name, key)
 	if err != nil {
 		return nil, err
@@ -80,14 +92,14 @@ func (r *StateRegistry) GetState(key ...string) (common.StateInterface, error) {
 }
 
 // GetStates return a list of states by their partial composite key
-func (r *StateRegistry) GetStates(key ...string) ([]common.StateInterface, error) {
+func (r *StateRegistry) GetStates(key ...string) ([]StateInterface, error) {
 	iterator, err := r.ctx.GetStub().GetStateByPartialCompositeKey(r.Name, key)
 	if err != nil {
 		return nil, err
 	}
 	defer iterator.Close()
 
-	states := make([]common.StateInterface, 0)
+	states := make([]StateInterface, 0)
 	for iterator.HasNext() {
 		result, err := iterator.Next()
 		if err != nil {
@@ -106,18 +118,18 @@ func (r *StateRegistry) GetStates(key ...string) ([]common.StateInterface, error
 }
 
 // RemoveState remove a state from the ledger
-func (r *StateRegistry) RemoveState(state common.StateInterface) error {
-	key_, err := r.ctx.GetStub().CreateCompositeKey(r.Name, state.GetKeyComponents())
+func (r *StateRegistry) RemoveState(state StateInterface) error {
+	key, err := r.ctx.GetStub().CreateCompositeKey(r.Name, state.GetKeyComponents())
 	if err != nil {
 		return err
 	}
 
-	data, err := r.ctx.GetStub().GetState(key_)
+	data, err := r.ctx.GetStub().GetState(key)
 	if err != nil {
 		return err
 	} else if data == nil {
-		return &common.NotFoundError{What: key_}
+		return &common.NotFoundError{What: key}
 	}
 
-	return r.ctx.GetStub().DelState(key_)
+	return r.ctx.GetStub().DelState(key)
 }
