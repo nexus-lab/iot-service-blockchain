@@ -25,7 +25,7 @@ func (s *ServiceBrokerSmartContract) Request(ctx TransactionContextInterface, da
 	if err == nil {
 		event := fmt.Sprintf("request://%s/%s/%s/%s/request", request.Service.OrganizationId, request.Service.DeviceId, request.Service.Name, request.Id)
 		payload, _ := request.Serialize()
-		ctx.GetStub().SetEvent(event, payload)
+		err = ctx.GetStub().SetEvent(event, payload)
 	}
 
 	return err
@@ -66,7 +66,7 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 	if err == nil {
 		event := fmt.Sprintf("request://%s/%s/%s/%s/respond", request.Service.OrganizationId, request.Service.DeviceId, request.Service.Name, request.Id)
 		payload, _ := response.Serialize()
-		ctx.GetStub().SetEvent(event, payload)
+		err = ctx.GetStub().SetEvent(event, payload)
 	}
 
 	return err
@@ -111,7 +111,7 @@ func (s *ServiceBrokerSmartContract) Remove(ctx TransactionContextInterface, req
 	// notify listening clients of the update
 	if err == nil {
 		event := fmt.Sprintf("request://%s/%s/%s/%s/remove", request.Service.OrganizationId, request.Service.DeviceId, request.Service.Name, request.Id)
-		ctx.GetStub().SetEvent(event, []byte(requestId))
+		err = ctx.GetStub().SetEvent(event, []byte(requestId))
 	}
 
 	return err

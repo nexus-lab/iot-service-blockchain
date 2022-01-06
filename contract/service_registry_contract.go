@@ -39,7 +39,7 @@ func (s *ServiceRegistrySmartContract) Register(ctx TransactionContextInterface,
 	if err == nil {
 		event := fmt.Sprintf("service://%s/%s/%s/register", service.OrganizationId, service.DeviceId, service.Name)
 		payload, _ := service.Serialize()
-		ctx.GetStub().SetEvent(event, payload)
+		err = ctx.GetStub().SetEvent(event, payload)
 	}
 
 	return err
@@ -82,7 +82,7 @@ func (s *ServiceRegistrySmartContract) Deregister(ctx TransactionContextInterfac
 	if err == nil {
 		event := fmt.Sprintf("service://%s/%s/%s/deregister", service.OrganizationId, service.DeviceId, service.Name)
 		payload, _ := service.Serialize()
-		ctx.GetStub().SetEvent(event, payload)
+		err = ctx.GetStub().SetEvent(event, payload)
 	}
 
 	return err
