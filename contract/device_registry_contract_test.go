@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/nexus-lab/iot-service-blockchain/common"
@@ -23,13 +24,13 @@ func (s *DeviceRegistryContractTestSuite) TestRegister() {
 	deviceRegistry.On("Register", mock.AnythingOfType("*common.Device")).Return(nil)
 
 	contract := new(DeviceRegistrySmartContract)
-	err := contract.Register(ctx, "{\"id\":\"Device1Id\",\"organizationId\":\"Org1Id\",\"name\":\"Device1\",\"description\":\"Device of Org1 User1\",\"lastUpdateTime\":\"2021-12-12T17:34:00-05:00\"}")
+	err := contract.Register(ctx, fmt.Sprintf("{\"id\":\"%s\",\"organizationId\":\"%s\",\"name\":\"Device1\",\"description\":\"Device of Org1 User1\",\"lastUpdateTime\":\"2021-12-12T17:34:00-05:00\"}", deviceId, organizationId))
 	assert.Nil(s.T(), err, "should return no error")
 	called := deviceRegistry.AssertCalled(s.T(), "Register", mock.AnythingOfType("*common.Device"))
 	assert.True(s.T(), called, "should put device to device registry")
-	device := deviceRegistry.Calls[0].Arguments[0].(*common.Device)
-	assert.Equal(s.T(), deviceId, device.Id, "should change device ID")
-	assert.Equal(s.T(), organizationId, device.OrganizationId, "should change organization ID")
+
+	err = contract.Register(ctx, "{\"id\":\"Device2Id\",\"organizationId\":\"Org2MSP\",\"name\":\"Device1\",\"description\":\"Device of Org1 User1\",\"lastUpdateTime\":\"2021-12-12T17:34:00-05:00\"}")
+	assert.Error(s.T(), err, "should return mismatch device ID and organization ID error")
 
 	err = contract.Register(ctx, "[]")
 	assert.Error(s.T(), err, "should return deserialization error")
@@ -68,21 +69,23 @@ func (s *DeviceRegistryContractTestSuite) TestDeregister() {
 
 	deviceId, _ := ctx.GetClientIdentity().GetID()
 	organizationId, _ := ctx.GetClientIdentity().GetMSPID()
-	expected := new(common.Device)
-	deviceRegistry.On("Get", organizationId, deviceId).Return(expected, nil)
-	deviceRegistry.On("Get", mock.Anything, mock.Anything).Return(nil, new(common.NotFoundError))
-	deviceRegistry.On("Deregister", expected).Return(nil)
+	deviceRegistry.On("Deregister", mock.MatchedBy(func(device *common.Device) bool {
+		return device.Id == deviceId && device.OrganizationId == organizationId
+	})).Return(nil)
+	deviceRegistry.On("Deregister", mock.Anything).Return(new(common.NotFoundError))
 
 	contract := new(DeviceRegistrySmartContract)
-	err := contract.Deregister(ctx)
+	err := contract.Deregister(ctx, fmt.Sprintf("{\"id\":\"%s\",\"organizationId\":\"%s\"}", deviceId, organizationId))
 	assert.Nil(s.T(), err, "should return no error")
-	called := deviceRegistry.AssertCalled(s.T(), "Deregister", expected)
-	assert.True(s.T(), called, "should remove device to device registry")
-	actual := deviceRegistry.Calls[1].Arguments[0].(*common.Device)
-	assert.Equal(s.T(), expected, actual, "should remove the correct device")
+	actual := deviceRegistry.Calls[0].Arguments[0].(*common.Device)
+	assert.Equal(s.T(), deviceId, actual.Id, "should remove the correct device")
+	assert.Equal(s.T(), organizationId, actual.OrganizationId, "should remove the correct device")
+
+	err = contract.Deregister(ctx, "{\"id\":\"Device2Id\",\"organizationId\":\"Org2MSP\"}")
+	assert.Error(s.T(), err, "should return mismatch device ID and organization ID error")
 
 	ctx.clientId = &MockClientIdentity{Id: "Device2Id", MspId: "Org2MSP"}
-	err = contract.Deregister(ctx)
+	err = contract.Deregister(ctx, "{\"id\":\"Device2Id\",\"organizationId\":\"Org2MSP\"}")
 	assert.IsType(s.T(), new(common.NotFoundError), err, "should return not found error")
 }
 

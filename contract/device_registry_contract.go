@@ -1,6 +1,8 @@
 package contract
 
 import (
+	"fmt"
+
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"github.com/nexus-lab/iot-service-blockchain/common"
 )
@@ -27,8 +29,9 @@ func (s *DeviceRegistrySmartContract) Register(ctx TransactionContextInterface, 
 		return err
 	}
 
-	device.OrganizationId = organizationId
-	device.Id = deviceId
+	if device.OrganizationId != organizationId || device.Id != deviceId {
+		return fmt.Errorf("cannot register a device other than the requested device")
+	}
 
 	return ctx.GetDeviceRegistry().Register(device)
 }
@@ -44,20 +47,24 @@ func (s *DeviceRegistrySmartContract) GetAll(ctx TransactionContextInterface, or
 }
 
 // Deregister remove a device and its services from the ledger
-func (s *DeviceRegistrySmartContract) Deregister(ctx TransactionContextInterface) error {
+func (s *DeviceRegistrySmartContract) Deregister(ctx TransactionContextInterface, data string) error {
 	var err error
-	var device *common.Device
 	var organizationId, deviceId string
 
-	// check if the device already exists
+	device, err := common.DeserializeDevice([]byte(data))
+	if err != nil {
+		return err
+	}
+
 	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
 		return err
 	}
 	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
 		return err
 	}
-	if device, err = ctx.GetDeviceRegistry().Get(organizationId, deviceId); err != nil {
-		return err
+
+	if device.OrganizationId != organizationId || device.Id != deviceId {
+		return fmt.Errorf("cannot deregister a device other than the requested device")
 	}
 
 	return ctx.GetDeviceRegistry().Deregister(device)

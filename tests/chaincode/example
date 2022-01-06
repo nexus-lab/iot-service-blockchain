@@ -8,9 +8,21 @@ function register_device_query() {
     echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$device.json | jq -c '. | tostring')"
 }
 
+function deregister_device_query() {
+    device=$1
+    template='{"Function":"device_registry:Deregister","Args":[""]}'
+    echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$device.json | jq -c '. | tostring')"
+}
+
 function register_service_query() {
     service=$1
     template='{"Function":"service_registry:Register","Args":[""]}'
+    echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$service.json | jq -c '. | tostring')"
+}
+
+function deregister_service_query() {
+    service=$1
+    template='{"Function":"service_registry:Deregister","Args":[""]}'
     echo $template | jq -c ".Args[0] = $(cat ./tests/chaincode/$service.json | jq -c '. | tostring')"
 }
 
@@ -79,15 +91,15 @@ sleep 2
 ./scripts/fabric chaincode query "{\"Function\":\"service_broker:Get\",\"Args\":[${REQUEST2_ID}]}" | jq
 
 echo "================== Deregister Service 2 =================="
-FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"service_registry:Deregister\",\"Args\":[\"service2\"]}"
+FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(deregister_service_query service2)"
 
 sleep 2
 
 ./scripts/fabric chaincode query "{\"Function\":\"service_registry:GetAll\",\"Args\":[\"Org2MSP\",${DEVICE2_ID}]}" | jq
 
 echo "================== Deregister Devices =================="
-FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"device_registry:Deregister\",\"Args\":[]}"
-FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "{\"Function\":\"device_registry:Deregister\",\"Args\":[]}"
+FABRIC_ORG=Org1 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(deregister_device_query device1)"
+FABRIC_ORG=Org2 FABRIC_USER=User1 ./scripts/fabric chaincode invoke "$(deregister_device_query device2)"
 
 sleep 2
 
