@@ -47,10 +47,10 @@ func (s *ServiceBrokerSmartContract) Respond(ctx TransactionContextInterface, da
 		return err
 	}
 
-	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
+	if organizationId, err = ctx.GetOrganizationId(); err != nil {
 		return err
 	}
-	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
+	if deviceId, err = ctx.GetDeviceId(); err != nil {
 		return err
 	}
 
@@ -93,10 +93,10 @@ func (s *ServiceBrokerSmartContract) Remove(ctx TransactionContextInterface, req
 		return err
 	}
 
-	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
+	if organizationId, err = ctx.GetOrganizationId(); err != nil {
 		return err
 	}
-	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
+	if deviceId, err = ctx.GetDeviceId(); err != nil {
 		return err
 	}
 

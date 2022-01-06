@@ -22,10 +22,10 @@ func (s *ServiceRegistrySmartContract) Register(ctx TransactionContextInterface,
 		return err
 	}
 
-	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
+	if organizationId, err = ctx.GetOrganizationId(); err != nil {
 		return err
 	}
-	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
+	if deviceId, err = ctx.GetDeviceId(); err != nil {
 		return err
 	}
 
@@ -65,10 +65,10 @@ func (s *ServiceRegistrySmartContract) Deregister(ctx TransactionContextInterfac
 		return err
 	}
 
-	if organizationId, err = ctx.GetClientIdentity().GetMSPID(); err != nil {
+	if organizationId, err = ctx.GetOrganizationId(); err != nil {
 		return err
 	}
-	if deviceId, err = ctx.GetClientIdentity().GetID(); err != nil {
+	if deviceId, err = ctx.GetDeviceId(); err != nil {
 		return err
 	}
 
