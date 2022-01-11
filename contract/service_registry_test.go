@@ -52,12 +52,12 @@ func (s *ServiceRegistryTestSuite) TestRegister() {
 	serviceRegistry.stateRegistry = stateRegistry
 
 	service := new(common.Service)
-	service.OrganizationId = "Org1MSP"
-	service.DeviceId = "Device1"
-	service.Name = "Service1"
+	service.OrganizationId = "org1"
+	service.DeviceId = "device1"
+	service.Name = "service1"
 
 	stateRegistry.On("PutState", service).Return(nil)
-	deviceRegistry.On("Get", "Org1MSP", "Device1").Return(new(common.Device), nil)
+	deviceRegistry.On("Get", "org1", "device1").Return(new(common.Device), nil)
 	deviceRegistry.On("Get", mock.Anything, mock.Anything).Return(nil, new(common.NotFoundError))
 
 	err := serviceRegistry.Register(service)
@@ -66,8 +66,8 @@ func (s *ServiceRegistryTestSuite) TestRegister() {
 	assert.Nil(s.T(), err, "should return no error")
 
 	service = new(common.Service)
-	service.OrganizationId = "Org2MSP"
-	service.DeviceId = "Device2"
+	service.OrganizationId = "org2"
+	service.DeviceId = "device2"
 
 	err = serviceRegistry.Register(service)
 	assert.IsType(s.T(), new(common.NotFoundError), err, "should return not found error")
@@ -81,14 +81,14 @@ func (s *ServiceRegistryTestSuite) TestGet() {
 	serviceRegistry.stateRegistry = stateRegistry
 
 	service := new(common.Service)
-	stateRegistry.On("GetState", []string{"Org1MSP", "Device1", "Service1"}).Return(service, nil)
+	stateRegistry.On("GetState", []string{"org1", "device1", "service1"}).Return(service, nil)
 	stateRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 
-	result, err := serviceRegistry.Get("Org1MSP", "Device1", "Service1")
+	result, err := serviceRegistry.Get("org1", "device1", "service1")
 	assert.Equal(s.T(), service, result, "should return the correct service")
 	assert.Nil(s.T(), err, "should return no error")
 
-	result, err = serviceRegistry.Get("Org2MSP", "Device2", "Service2")
+	result, err = serviceRegistry.Get("org2", "device2", "service2")
 	assert.Nil(s.T(), result, "should return no service")
 	assert.IsType(s.T(), new(common.NotFoundError), err, "should return not found error")
 }
@@ -101,17 +101,17 @@ func (s *ServiceRegistryTestSuite) TestGetAll() {
 	serviceRegistry.stateRegistry = stateRegistry
 
 	services := []StateInterface{new(common.Service), new(common.Service)}
-	stateRegistry.On("GetStates", []string{"Org1MSP", "Device1"}).Return(services, nil)
+	stateRegistry.On("GetStates", []string{"org1", "device1"}).Return(services, nil)
 	stateRegistry.On("GetStates", mock.Anything).Return([]StateInterface{}, nil)
 
-	results, err := serviceRegistry.GetAll("Org1MSP", "Device1")
+	results, err := serviceRegistry.GetAll("org1", "device1")
 	assert.Equal(s.T(), len(services), len(results), "should return the correct number of services")
 	assert.Nil(s.T(), err, "should return no error")
 	for i := range results {
 		assert.Equal(s.T(), services[i], results[i], "should return correct service")
 	}
 
-	results, err = serviceRegistry.GetAll("Org2MSP", "Device2")
+	results, err = serviceRegistry.GetAll("org2", "device2")
 	assert.Zero(s.T(), len(results), "should return no service")
 	assert.Nil(s.T(), err, "should return no error")
 }
@@ -128,16 +128,16 @@ func (s *ServiceRegistryTestSuite) TestDeregister() {
 	serviceRegistry.stateRegistry = stateRegistry
 
 	service := new(common.Service)
-	service.DeviceId = "Device1"
-	service.OrganizationId = "Org1MSP"
-	service.Name = "Service1"
+	service.DeviceId = "device1"
+	service.OrganizationId = "org1"
+	service.Name = "service1"
 
 	pairs := []*common.ServiceRequestResponse{
-		{Request: &common.ServiceRequest{Id: "Request1"}},
-		{Request: &common.ServiceRequest{Id: "Request2"}},
+		{Request: &common.ServiceRequest{Id: "request1"}},
+		{Request: &common.ServiceRequest{Id: "request2"}},
 	}
 
-	serviceBroker.On("GetAll", "Org1MSP", "Device1", "Service1").Return(pairs, nil)
+	serviceBroker.On("GetAll", "org1", "device1", "service1").Return(pairs, nil)
 	serviceBroker.On("Remove", mock.Anything).Return(nil)
 	stateRegistry.On("RemoveState", service).Return(nil)
 
@@ -146,7 +146,7 @@ func (s *ServiceRegistryTestSuite) TestDeregister() {
 	assert.True(s.T(), called, "should remove service from state registry")
 	assert.Nil(s.T(), err, "should return no error")
 
-	called = serviceBroker.AssertCalled(s.T(), "Remove", "Request2")
+	called = serviceBroker.AssertCalled(s.T(), "Remove", "request2")
 	assert.True(s.T(), called, "should remove service (request, response) pairs by the service broker")
 }
 

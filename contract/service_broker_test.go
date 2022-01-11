@@ -59,19 +59,19 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 	serviceBroker.requestRegistry = requestRegistry
 
 	request := &common.ServiceRequest{
-		Id: "Request1",
+		Id: "request1",
 		Service: common.Service{
-			OrganizationId: "Org1MSP",
-			DeviceId:       "Device1",
-			Name:           "Service1",
+			OrganizationId: "org1",
+			DeviceId:       "device1",
+			Name:           "service1",
 		},
 	}
 
-	requestRegistry.On("GetState", []string{"Request1"}).Return(nil, new(common.NotFoundError))
+	requestRegistry.On("GetState", []string{"request1"}).Return(nil, new(common.NotFoundError))
 	requestRegistry.On("GetState", mock.Anything).Return(new(common.ServiceRequest), nil)
 	requestRegistry.On("PutState", request).Return(nil)
 	indexRegistry.On("PutState", mock.Anything).Return(nil)
-	serviceRegistry.On("Get", "Org1MSP", "Device1", "Service1").Return(new(common.Service), nil)
+	serviceRegistry.On("Get", "org1", "device1", "service1").Return(new(common.Service), nil)
 	serviceRegistry.On("Get", mock.Anything, mock.Anything, mock.Anything).Return(nil, new(common.NotFoundError))
 
 	err := serviceBroker.Request(request)
@@ -84,11 +84,11 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 	assert.Equal(s.T(), request.Id, index.RequestId, "should set request ID of the index")
 
 	request = &common.ServiceRequest{
-		Id: "Request1",
+		Id: "request1",
 		Service: common.Service{
-			OrganizationId: "Org2MSP",
-			DeviceId:       "Device2",
-			Name:           "Service2",
+			OrganizationId: "org2",
+			DeviceId:       "device2",
+			Name:           "service2",
 		},
 	}
 	err = serviceBroker.Request(request)
@@ -97,11 +97,11 @@ func (s *ServiceBrokerTestSuite) TestRequest() {
 	assert.IsType(s.T(), new(common.NotFoundError), err, "should return service not found error")
 
 	request = &common.ServiceRequest{
-		Id: "Request2",
+		Id: "request2",
 		Service: common.Service{
-			OrganizationId: "Org1MSP",
-			DeviceId:       "Device1",
-			Name:           "Service1",
+			OrganizationId: "org1",
+			DeviceId:       "device1",
+			Name:           "service1",
 		},
 	}
 	err = serviceBroker.Request(request)
@@ -120,12 +120,12 @@ func (s *ServiceBrokerTestSuite) TestRespond() {
 	serviceBroker.requestRegistry = requestRegistry
 	serviceBroker.responseRegistry = responseRegistry
 
-	response := &common.ServiceResponse{RequestId: "Request1"}
+	response := &common.ServiceResponse{RequestId: "request1"}
 
-	requestRegistry.On("GetState", []string{"Request1"}).Return(new(common.ServiceRequest), nil)
-	requestRegistry.On("GetState", []string{"Request2"}).Return(new(common.ServiceRequest), nil)
+	requestRegistry.On("GetState", []string{"request1"}).Return(new(common.ServiceRequest), nil)
+	requestRegistry.On("GetState", []string{"request2"}).Return(new(common.ServiceRequest), nil)
 	requestRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
-	responseRegistry.On("GetState", []string{"Request1"}).Return(nil, new(common.NotFoundError))
+	responseRegistry.On("GetState", []string{"request1"}).Return(nil, new(common.NotFoundError))
 	responseRegistry.On("GetState", mock.Anything).Return(new(common.ServiceResponse), nil)
 	responseRegistry.On("PutState", response).Return(nil)
 
@@ -134,13 +134,13 @@ func (s *ServiceBrokerTestSuite) TestRespond() {
 	assert.True(s.T(), called, "should put response to state registry")
 	assert.Nil(s.T(), err, "should return no error")
 
-	response = &common.ServiceResponse{RequestId: "Request2"}
+	response = &common.ServiceResponse{RequestId: "request2"}
 	err = serviceBroker.Respond(response)
 	notCalled := responseRegistry.AssertNotCalled(s.T(), "PutState", response)
 	assert.True(s.T(), notCalled, "should not put response to state registry")
 	assert.EqualError(s.T(), err, "response already exists", "should return response already exists error")
 
-	response = &common.ServiceResponse{RequestId: "Request3"}
+	response = &common.ServiceResponse{RequestId: "request3"}
 	err = serviceBroker.Respond(response)
 	notCalled = responseRegistry.AssertNotCalled(s.T(), "PutState", response)
 	assert.True(s.T(), notCalled, "should not put response to state registry")
@@ -160,23 +160,23 @@ func (s *ServiceBrokerTestSuite) TestGet() {
 	request1 := new(common.ServiceRequest)
 	request2 := new(common.ServiceRequest)
 	response1 := new(common.ServiceResponse)
-	requestRegistry.On("GetState", []string{"Request1"}).Return(request1, nil)
-	requestRegistry.On("GetState", []string{"Request2"}).Return(request2, nil)
+	requestRegistry.On("GetState", []string{"request1"}).Return(request1, nil)
+	requestRegistry.On("GetState", []string{"request2"}).Return(request2, nil)
 	requestRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
-	responseRegistry.On("GetState", []string{"Request1"}).Return(response1, nil)
+	responseRegistry.On("GetState", []string{"request1"}).Return(response1, nil)
 	responseRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 
-	result, err := serviceBroker.Get("Request1")
+	result, err := serviceBroker.Get("request1")
 	assert.Equal(s.T(), request1, result.Request, "should return the correct request")
 	assert.Equal(s.T(), response1, result.Response, "should return the correct response")
 	assert.Nil(s.T(), err, "should return no error")
 
-	result, err = serviceBroker.Get("Request2")
+	result, err = serviceBroker.Get("request2")
 	assert.Equal(s.T(), request2, result.Request, "should return the correct request")
 	assert.Nil(s.T(), result.Response, "should return no response")
 	assert.Nil(s.T(), err, "should return no error")
 
-	result, err = serviceBroker.Get("Request3")
+	result, err = serviceBroker.Get("request3")
 	assert.Nil(s.T(), result, "should return no request and response")
 	assert.IsType(s.T(), new(common.NotFoundError), err, "should return not found error")
 }
@@ -194,22 +194,22 @@ func (s *ServiceBrokerTestSuite) TestGetAll() {
 	serviceBroker.responseRegistry = responseRegistry
 
 	indices := []StateInterface{
-		&serviceRequestIndex{RequestId: "Request1"},
-		&serviceRequestIndex{RequestId: "Request2"},
+		&serviceRequestIndex{RequestId: "request1"},
+		&serviceRequestIndex{RequestId: "request2"},
 	}
 	request1 := new(common.ServiceRequest)
 	request2 := new(common.ServiceRequest)
 	response1 := new(common.ServiceResponse)
 
-	indexRegistry.On("GetStates", []string{"Org1MSP", "Device1", "Service1"}).Return(indices, nil)
+	indexRegistry.On("GetStates", []string{"org1", "device1", "service1"}).Return(indices, nil)
 	indexRegistry.On("GetStates", mock.Anything).Return([]StateInterface{}, nil)
-	requestRegistry.On("GetState", []string{"Request1"}).Return(request1, nil)
-	requestRegistry.On("GetState", []string{"Request2"}).Return(request2, nil)
+	requestRegistry.On("GetState", []string{"request1"}).Return(request1, nil)
+	requestRegistry.On("GetState", []string{"request2"}).Return(request2, nil)
 	requestRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
-	responseRegistry.On("GetState", []string{"Request1"}).Return(response1, nil)
+	responseRegistry.On("GetState", []string{"request1"}).Return(response1, nil)
 	responseRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 
-	results, err := serviceBroker.GetAll("Org1MSP", "Device1", "Service1")
+	results, err := serviceBroker.GetAll("org1", "device1", "service1")
 	assert.Equal(s.T(), len(indices), len(results), "should return the correct number of requests/responses")
 	assert.Nil(s.T(), err, "should return no error")
 	assert.Equal(s.T(), request1, results[0].Request, "should return the correct request")
@@ -217,7 +217,7 @@ func (s *ServiceBrokerTestSuite) TestGetAll() {
 	assert.Equal(s.T(), request2, results[1].Request, "should return the correct request")
 	assert.Nil(s.T(), results[1].Response, "should return the correct response")
 
-	results, err = serviceBroker.GetAll("Org2MSP", "Device2", "Service2")
+	results, err = serviceBroker.GetAll("org2", "device2", "service2")
 	assert.Zero(s.T(), len(results), "should return no device")
 	assert.Nil(s.T(), err, "should return no error")
 }
@@ -238,16 +238,16 @@ func (s *ServiceBrokerTestSuite) TestRemove() {
 	request2 := new(common.ServiceRequest)
 	response1 := new(common.ServiceResponse)
 
-	requestRegistry.On("GetState", []string{"Request1"}).Return(request1, nil)
-	requestRegistry.On("GetState", []string{"Request2"}).Return(request2, nil)
+	requestRegistry.On("GetState", []string{"request1"}).Return(request1, nil)
+	requestRegistry.On("GetState", []string{"request2"}).Return(request2, nil)
 	requestRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
-	responseRegistry.On("GetState", []string{"Request1"}).Return(response1, nil)
+	responseRegistry.On("GetState", []string{"request1"}).Return(response1, nil)
 	responseRegistry.On("GetState", mock.Anything).Return(nil, new(common.NotFoundError))
 	requestRegistry.On("RemoveState", mock.Anything).Return(nil)
 	responseRegistry.On("RemoveState", mock.Anything).Return(nil)
 	indexRegistry.On("RemoveState", mock.Anything).Return(nil)
 
-	err := serviceBroker.Remove("Request1")
+	err := serviceBroker.Remove("request1")
 	called := requestRegistry.AssertCalled(s.T(), "RemoveState", request1)
 	assert.True(s.T(), called, "should remove request from state registry")
 	called = responseRegistry.AssertCalled(s.T(), "RemoveState", response1)
@@ -258,7 +258,7 @@ func (s *ServiceBrokerTestSuite) TestRemove() {
 	assert.Equal(s.T(), request1.Id, index.RequestId, "should remove correct index from state registry")
 	assert.Nil(s.T(), err, "should return no error")
 
-	err = serviceBroker.Remove("Request2")
+	err = serviceBroker.Remove("request2")
 	called = requestRegistry.AssertCalled(s.T(), "RemoveState", request2)
 	assert.True(s.T(), called, "should remove request from state registry")
 	notCalled := responseRegistry.AssertNumberOfCalls(s.T(), "RemoveState", 1)
@@ -269,7 +269,7 @@ func (s *ServiceBrokerTestSuite) TestRemove() {
 	assert.Equal(s.T(), request2.Id, index.RequestId, "should remove correct index from state registry")
 	assert.Nil(s.T(), err, "should return no error")
 
-	err = serviceBroker.Remove("Request3")
+	err = serviceBroker.Remove("request3")
 	notCalled = requestRegistry.AssertNumberOfCalls(s.T(), "RemoveState", 2)
 	assert.True(s.T(), notCalled, "should not remove request from state registry")
 	notCalled = responseRegistry.AssertNumberOfCalls(s.T(), "RemoveState", 1)
