@@ -8,8 +8,8 @@ import (
 )
 
 // ParseCertificate parse an X509 certificate from PEM string
-func ParseCertificate(rawCert string) (*x509.Certificate, error) {
-	block, _ := pem.Decode([]byte(rawCert))
+func ParseCertificate(certificate []byte) (*x509.Certificate, error) {
+	block, _ := pem.Decode(certificate)
 	if block == nil {
 		return nil, fmt.Errorf("failed to decode PEM block")
 	}

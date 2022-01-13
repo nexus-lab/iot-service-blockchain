@@ -53,7 +53,7 @@ func (i *mockClientIdentity) AssertAttributeValue(attrName, attrValue string) er
 }
 
 func (i *mockClientIdentity) GetX509Certificate() (*x509.Certificate, error) {
-	return common.ParseCertificate(CERTIFICATE)
+	return common.ParseCertificate([]byte(CERTIFICATE))
 }
 
 type mockChaincodeStub struct {

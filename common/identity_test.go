@@ -50,21 +50,21 @@ type IdentityTestSuite struct {
 }
 
 func (s *IdentityTestSuite) TestParseCertificate() {
-	cert, err := ParseCertificate("-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----")
+	cert, err := ParseCertificate([]byte("-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----"))
 	assert.Error(s.T(), err, "should return error if PEM is invalid")
 	assert.Nil(s.T(), cert, "should not return certicate on error")
 
-	cert, err = ParseCertificate(PUBLIC_KEY)
+	cert, err = ParseCertificate([]byte(PUBLIC_KEY))
 	assert.Error(s.T(), err, "should return error if certificate is invalid")
 	assert.Nil(s.T(), cert, "should not return certicate on error")
 
-	cert, err = ParseCertificate(CERTIFICATE)
+	cert, err = ParseCertificate([]byte(CERTIFICATE))
 	assert.NotNil(s.T(), cert, "should return certicate")
 	assert.Nil(s.T(), err, "should return no error if certificate is valid")
 }
 
 func (s *IdentityTestSuite) TestGetClientId() {
-	cert, _ := ParseCertificate(CERTIFICATE)
+	cert, _ := ParseCertificate([]byte(CERTIFICATE))
 	id, err := GetClientId(cert)
 	assert.Equal(s.T(), CLIENT_ID, id, "should return correct ID")
 	assert.Nil(s.T(), err, "should return no error if certificate is valid")
