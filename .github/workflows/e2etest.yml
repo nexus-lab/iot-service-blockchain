@@ -1,0 +1,52 @@
+name: Run End-to-end Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DISABLE_BLOCKCHAIN_EXPLORER: 1 
+      DISABLE_LOGSPOUT: 1 
+      FABRIC_ROOT: ~/.fabric
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache Go packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Cache Hyperledger Fabric files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.FABRIC_ROOT }}
+          key: ${{ runner.os }}-fabric-${{ hashFiles('**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-fabric-
+      - name: Set up Hyperledger Fabric network
+        run: |
+          ./tests/scripts/fabric download
+          ./tests/scripts/fabric network down
+          ./tests/scripts/fabric network up
+          ./tests/scripts/fabric chaincode deploy
+      - name: Run tests
+        run: go run ./tests/e2e/go/run.go
+      - name: Clean up Hyperledger Fabric network
+        run: |
+          ./tests/scripts/fabric network down

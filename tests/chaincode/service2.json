@@ -1,8 +1,0 @@
-{
-  "name": "service2",
-  "Version": 1,
-  "description": "Service of Device2",
-  "organizationId": "Org2MSP",
-  "deviceId": "eDUwOTo6Q049dXNlcjEsT1U9Y2xpZW50LE89SHlwZXJsZWRnZXIsU1Q9Tm9ydGggQ2Fyb2xpbmEsQz1VUzo6Q049Y2Eub3JnMi5leGFtcGxlLmNvbSxPPW9yZzIuZXhhbXBsZS5jb20sTD1IdXJzbGV5LFNUPUhhbXBzaGlyZSxDPVVL",
-  "lastUpdateTime": "2021-12-12T17:37:00-05:00"
-}

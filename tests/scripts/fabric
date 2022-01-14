@@ -2,9 +2,12 @@
 
 set -euo pipefail
 
-PROJECT_ROOT="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"/.. &> /dev/null && pwd )"
+PROJECT_ROOT="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"/../.. &> /dev/null && pwd )"
 
-FABRIC_VERSION="${FABRIC_VERSION:-2.4.0}"
+DISABLE_BLOCKCHAIN_EXPLORER=${DISABLE_BLOCKCHAIN_EXPLORER:-0}
+DISABLE_LOGSPOUT=${DISABLE_LOGSPOUT:-0}
+
+FABRIC_VERSION="${FABRIC_VERSION:-2.4.1}"
 FABRIC_CA_VERSION="${FABRIC_CA_VERSION:-1.5.2}"
 FABRIC_ROOT=${FABRIC_ROOT:-$PROJECT_ROOT/.fabric}
 
@@ -56,20 +59,26 @@ function bringUpNetwork() {
     cd ${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore
     cp * priv_sk
 
-    if [[ ! -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
-        downloadBlockchainExplorer
+    cd ${FABRIC_ROOT}/test-network/organizations/peerOrganizations/org2.example.com/users/User1@org2.example.com/msp/keystore
+    cp * priv_sk
+
+    if [[ ${DISABLE_BLOCKCHAIN_EXPLORER} -eq 0 ]]; then
+        if [[ ! -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
+            downloadBlockchainExplorer
+        fi
+        cd ${BLOCKCHAIN_EXPLORER_ROOT}
+        docker-compose up -d
+        echo "Blockchain explorer started at http://0.0.0.0:8080 with username 'exploreradmin' and password 'exploreradminpw'."
     fi
-    cd ${BLOCKCHAIN_EXPLORER_ROOT}
-    docker-compose up -d
-    echo "Blockchain explorer started at http://0.0.0.0:8080 with username 'exploreradmin' and password 'exploreradminpw'."
 
-    docker run -d --name=fabric_logspout \
-        --volume=/var/run/docker.sock:/var/run/docker.sock \
-        --publish=0.0.0.0:8081:80 \
-        --network fabric_test \
-        gliderlabs/logspout
-
-    echo "Logspout started at http://0.0.0.0:8081/logs."
+    if [[ ${DISABLE_LOGSPOUT} -eq 0 ]]; then
+        docker run -d --name=fabric_logspout \
+            --volume=/var/run/docker.sock:/var/run/docker.sock \
+            --publish=0.0.0.0:8081:80 \
+            --network fabric_test \
+            gliderlabs/logspout
+        echo "Logspout started at http://0.0.0.0:8081/logs."
+    fi
 
     cd - &> /dev/null
 }
@@ -81,14 +90,18 @@ function bringDownNetwork() {
         cd - &> /dev/null
     fi
 
-    if [[ -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
-        cd ${BLOCKCHAIN_EXPLORER_ROOT}
-        docker-compose down -v
-        cd - &> /dev/null
+    if [[ ${DISABLE_BLOCKCHAIN_EXPLORER} -eq 0 ]]; then
+        if [[ -d ${BLOCKCHAIN_EXPLORER_ROOT} ]]; then
+            cd ${BLOCKCHAIN_EXPLORER_ROOT}
+            docker-compose down -v
+            cd - &> /dev/null
+        fi
     fi
 
-    docker kill fabric_logspout 2> /dev/null 1>&2 || true
-    docker rm fabric_logspout 2> /dev/null 1>&2 || true
+    if [[ ${DISABLE_LOGSPOUT} -eq 0 ]]; then
+        docker kill fabric_logspout 2> /dev/null 1>&2 || true
+        docker rm fabric_logspout 2> /dev/null 1>&2 || true
+    fi
 }
 
 function deployChaincode() {
@@ -185,7 +198,9 @@ COMMAND=$1; shift
 case $COMMAND in
     download)
         downloadFabricSamples
-        downloadBlockchainExplorer
+        if [[ ${DISABLE_BLOCKCHAIN_EXPLORER} -eq 0 ]]; then
+            downloadBlockchainExplorer
+        fi
         ;;
     network)
         SUBCOMMAND=$1; shift
