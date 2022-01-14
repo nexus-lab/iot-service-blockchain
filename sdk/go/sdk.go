@@ -96,7 +96,7 @@ func newGrpcConnection(endpoint, serverName string, certificate []byte) (*grpc.C
 }
 
 // NewSdk create a new SDK instance from options
-func NewSdk(options SdkOptions) (*Sdk, error) {
+func NewSdk(options *SdkOptions) (*Sdk, error) {
 	sdk := new(Sdk)
 
 	id, err := newIdentity(options.OrganizationId, options.Certificate)

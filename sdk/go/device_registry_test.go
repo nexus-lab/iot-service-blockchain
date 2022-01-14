@@ -132,6 +132,7 @@ func (s *DeviceRegistryTestSuite) TestRegisterEvent() {
 	contract.On("RegisterEvent", mock.Anything).Return(eventChannel, cancelFunc, nil)
 
 	source, cancel, err := deviceRegistry.RegisterEvent()
+	defer cancel()
 	assert.Nil(s.T(), err, "should return no error")
 	assert.IsType(s.T(), *new(context.CancelFunc), cancel, "should return correct cancel function")
 
@@ -143,8 +144,6 @@ func (s *DeviceRegistryTestSuite) TestRegisterEvent() {
 		assert.IsType(s.T(), new(common.Device), event.Payload, "should return parsed device as event payload")
 		assert.Equal(s.T(), fmt.Sprintf("device%d", i), event.Payload.(*common.Device).Name, "should return correct event payload")
 	}
-
-	cancel()
 
 	contract = new(MockContract)
 	deviceRegistry = &DeviceRegistry{contract}
