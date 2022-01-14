@@ -14,7 +14,7 @@ jobs:
     env:
       DISABLE_BLOCKCHAIN_EXPLORER: 1 
       DISABLE_LOGSPOUT: 1 
-      FABRIC_ROOT: ~/.fabric
+      FABRIC_ROOT: /tmp/.fabric
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -42,7 +42,6 @@ jobs:
       - name: Set up Hyperledger Fabric network
         run: |
           ./tests/scripts/fabric download
-          ./tests/scripts/fabric network down
           ./tests/scripts/fabric network up
           ./tests/scripts/fabric chaincode deploy
       - name: Run tests
