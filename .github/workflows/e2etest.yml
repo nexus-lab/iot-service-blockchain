@@ -31,14 +31,6 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - name: Cache Hyperledger Fabric files
-        uses: actions/cache@v2
-        with:
-          path: |
-            ${{ env.FABRIC_ROOT }}
-          key: ${{ runner.os }}-fabric-${{ hashFiles('**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-fabric-
       - name: Set up Hyperledger Fabric network
         run: |
           ./tests/scripts/fabric download
