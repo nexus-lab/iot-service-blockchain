@@ -1,0 +1,38 @@
+{
+  "name": "iot-service-blockchain",
+  "version": "0.0.1",
+  "description": "Secure Decentralized IoT Service Platform using Consortium Blockchain ",
+  "main": "sdk/javascript/index.js",
+  "repository": "https://github.com/nexus-lab/iot-service-blockchain.git",
+  "author": "ppoffice <ppoffice@users.noreply.github.com>",
+  "license": "GPL-3.0",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "clean": "tsc --build tsconfig.json --clean",
+    "_lint": "tsc --project tsconfig.json --noEmit && eslint --ext .ts .",
+    "lint": "npm run _lint",
+    "lint:check": "npm run _lint -- --fix",
+    "_format": "prettier \"sdk/javascript/**/*.ts\" \"tests/e2e/javascript/**/*.ts\"",
+    "format": "npm run _format -- --write",
+    "format:check": "npm run _format -- --check",
+    "test": "npm run build && jest"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "@types/jest": "^27.4.0",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "eslint": "^8.7.0",
+    "eslint-config-prettier": "^8.3.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@fidm/x509": "^1.2.1",
+    "@grpc/grpc-js": "^1.5.3",
+    "@hyperledger/fabric-gateway": "^1.0.0",
+    "uuid": "^8.3.2"
+  }
+}

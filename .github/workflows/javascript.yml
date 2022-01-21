@@ -1,0 +1,75 @@
+name: Run JavaScript Code Style Checks and Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    name: Code style checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn install
+      - name: Run code style checks
+        run: |
+          yarn lint:check
+          yarn format:check
+
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['12', '14', '16']
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'yarn'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn install
+      - name: Run tests
+        run: yarn test
+
+  e2e-test:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    env:
+      DISABLE_BLOCKCHAIN_EXPLORER: 1
+      DISABLE_LOGSPOUT: 1
+      FABRIC_ROOT: /tmp/.fabric
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Hyperledger Fabric network
+        run: |
+          ./tests/scripts/fabric download
+          ./tests/scripts/fabric network up
+          ./tests/scripts/fabric chaincode deploy
+      - name: Run tests
+        run: |
+          yarn build
+          node ./tests/e2e/javascript/run.js
+      - name: Clean up Hyperledger Fabric network
+        run: |
+          ./tests/scripts/fabric network down
