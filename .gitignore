@@ -152,8 +152,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-yarn.lock
-
 # TypeScript build files
 sdk/javascript/**/*.js
 tests/e2e/javascript/**/*.js

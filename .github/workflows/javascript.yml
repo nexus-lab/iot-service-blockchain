@@ -1,4 +1,4 @@
-name: Run JavaScript Code Style Checks and Tests
+name: JavaScript Code Style Checks and Tests
 
 on:
   push:
