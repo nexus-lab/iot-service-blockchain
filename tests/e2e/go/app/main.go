@@ -168,4 +168,6 @@ func main() {
 	device := getDevice(isb)
 	services := getServices(isb, device)
 	sendServiceRequest(isb, services)
+
+	isb.Close()
 }

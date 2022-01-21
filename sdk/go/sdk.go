@@ -14,6 +14,7 @@ import (
 
 // Sdk the iot service blockchain sdk
 type Sdk struct {
+	grpcConnection  *grpc.ClientConn
 	gw              *client.Gateway
 	organizationId  string
 	deviceId        string
@@ -131,6 +132,7 @@ func NewSdk(options *SdkOptions) (*Sdk, error) {
 		return nil, err
 	}
 
+	sdk.grpcConnection = conn
 	sdk.gw = gw
 
 	network := gw.GetNetwork(options.NetworkName)
@@ -192,8 +194,12 @@ func (s *Sdk) GetServiceBroker() ServiceBrokerInterface {
 }
 
 // Close close connection to the Hyperledger Fabric gateway
-func (s *Sdk) Close() {
+func (s *Sdk) Close() error {
 	if s.gw != nil {
 		s.gw.Close()
 	}
+	if s.grpcConnection != nil {
+		return s.grpcConnection.Close()
+	}
+	return nil
 }

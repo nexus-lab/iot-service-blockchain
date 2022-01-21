@@ -1,0 +1,91 @@
+name: Golang Code Style Checks and Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    name: Code style checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache Go packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Set up golangci-lint
+        uses: golangci/golangci-lint-action@v2
+
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.16', '1.17']
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache Go packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run tests
+        run: go test -v ./...
+
+  e2e-test:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    env:
+      DISABLE_BLOCKCHAIN_EXPLORER: 1
+      DISABLE_LOGSPOUT: 1
+      FABRIC_ROOT: /tmp/.fabric
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache Go packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Set up Hyperledger Fabric network
+        run: |
+          ./tests/scripts/fabric download
+          ./tests/scripts/fabric network up
+          ./tests/scripts/fabric chaincode deploy
+      - name: Run tests
+        run: go run ./tests/e2e/go/run.go
+      - name: Clean up Hyperledger Fabric network
+        run: |
+          ./tests/scripts/fabric network down

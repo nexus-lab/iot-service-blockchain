@@ -23,7 +23,7 @@ PhE4X6hiE0YmeAZjR0uHl8M/5aW9xCoJ72+12kKpWAa0SFRWLy6FejNYCYpkupVJ
 yecLk/4L1W0l6jQQZnWErXZYe0PNFcmwGXy1Rep83kfBRNKRy5tvocalLlwXLdUk
 AIU+2GKjyT3iMuzZxxFxPFMCAwEAAQ==
 -----END PUBLIC KEY-----`
-	CERTIFICATE = `
+	CERTIFICATE1 = `
 -----BEGIN CERTIFICATE-----
 MIICmjCCAkCgAwIBAgIUd/uzCIgYnvr5IVrGgnVXIF/JvWMwCgYIKoZIzj0EAwIw
 bDELMAkGA1UEBhMCVUsxEjAQBgNVBAgTCUhhbXBzaGlyZTEQMA4GA1UEBxMHSHVy
@@ -40,9 +40,53 @@ YXRpb24iOiIiLCJoZi5FbnJvbGxtZW50SUQiOiJ1c2VyMSIsImhmLlR5cGUiOiJj
 bGllbnQifX0wCgYIKoZIzj0EAwIDSAAwRQIhALxDGVIsgP3VxXMzrv+l0ijGgX4T
 /AmTkI+tB0LZqzprAiAm3oeXhmFmxUXTnFXbumz7xelcodKByxXLHyAkucX/NA==
 -----END CERTIFICATE-----`
-	CLIENT_ID = "eDUwOTo6Q049dXNlcjEsT1U9Y2xpZW50LE89SHlwZXJsZWRnZXIsU1Q" +
+	CERTIFICATE2 = `
+-----BEGIN CERTIFICATE-----
+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
+rJgTOS8SNUM=
+-----END CERTIFICATE-----`
+	CLIENT_ID1 = "eDUwOTo6Q049dXNlcjEsT1U9Y2xpZW50LE89SHlwZXJsZWRnZXIsU1Q" +
 		"9Tm9ydGggQ2Fyb2xpbmEsQz1VUzo6Q049Y2Eub3JnMi5leGFtcGxlLmNvbSxPPW9yZz" +
 		"IuZXhhbXBsZS5jb20sTD1IdXJzbGV5LFNUPUhhbXBzaGlyZSxDPVVL"
+	CLIENT_ID2 = "eDUwOTo6U0VSSUFMTlVNQkVSPTEyMzQ1NlwrNzg5LENOPXRlc3QuZXh" +
+		"hbXBsZS5jb20sT1U9Q1MrT1U9XDxFTUNTXD5cOyxPPU5leHVzIExhYitPPVVUXCtDaG" +
+		"F0dGFub29nYStPPVVUQ2hhdHRhbm9vZ2ErTz1VVFw7Q2hhdHRhbm9vZ2EsUE9TVEFMQ" +
+		"09ERT0zNzQwMyxTVFJFRVQ9QXB0ICMwMDFcLCAxMjM0IFNvbWV3aGVyZSBTdC4sTD1D" +
+		"aGF0dGFub29nYSxTVD1UTixDPVVTK0M9VUs6OlNFUklBTE5VTUJFUj0xMjM0NTZcKzc" +
+		"4OSxDTj10ZXN0LmV4YW1wbGUuY29tLE9VPUNTK09VPVw8RU1DU1w+XDssTz1OZXh1cy" +
+		"BMYWIrTz1VVFwrQ2hhdHRhbm9vZ2ErTz1VVENoYXR0YW5vb2dhK089VVRcO0NoYXR0Y" +
+		"W5vb2dhLFBPU1RBTENPREU9Mzc0MDMsU1RSRUVUPUFwdCAjMDAxXCwgMTIzNCBTb21l" +
+		"d2hlcmUgU3QuLEw9Q2hhdHRhbm9vZ2EsU1Q9VE4sQz1VUytDPVVL"
 )
 
 type IdentityTestSuite struct {
@@ -58,15 +102,24 @@ func (s *IdentityTestSuite) TestParseCertificate() {
 	assert.Error(s.T(), err, "should return error if certificate is invalid")
 	assert.Nil(s.T(), cert, "should not return certicate on error")
 
-	cert, err = ParseCertificate([]byte(CERTIFICATE))
+	cert, err = ParseCertificate([]byte(CERTIFICATE1))
+	assert.NotNil(s.T(), cert, "should return certicate")
+	assert.Nil(s.T(), err, "should return no error if certificate is valid")
+
+	cert, err = ParseCertificate([]byte(CERTIFICATE2))
 	assert.NotNil(s.T(), cert, "should return certicate")
 	assert.Nil(s.T(), err, "should return no error if certificate is valid")
 }
 
 func (s *IdentityTestSuite) TestGetClientId() {
-	cert, _ := ParseCertificate([]byte(CERTIFICATE))
+	cert, _ := ParseCertificate([]byte(CERTIFICATE1))
 	id, err := GetClientId(cert)
-	assert.Equal(s.T(), CLIENT_ID, id, "should return correct ID")
+	assert.Equal(s.T(), CLIENT_ID1, id, "should return correct ID")
+	assert.Nil(s.T(), err, "should return no error if certificate is valid")
+
+	cert, _ = ParseCertificate([]byte(CERTIFICATE2))
+	id, err = GetClientId(cert)
+	assert.Equal(s.T(), CLIENT_ID2, id, "should return correct ID")
 	assert.Nil(s.T(), err, "should return no error if certificate is valid")
 }
 

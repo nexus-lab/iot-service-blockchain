@@ -132,7 +132,7 @@ func (r *ServiceRegistry) RegisterEvent(options ...client.ChaincodeEventsOption)
 			if serviceEvent.Action == "register" || serviceEvent.Action == "deregister" {
 				service, err := common.DeserializeService(event.Payload)
 				if err != nil {
-					log.Printf("bad service event payload %#v, action is%s\n", event.Payload, serviceEvent.Action)
+					log.Printf("bad service event payload %#v, action is %s\n", event.Payload, serviceEvent.Action)
 					continue
 				}
 				serviceEvent.Payload = service

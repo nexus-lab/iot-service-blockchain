@@ -19,10 +19,10 @@ type ServiceRequestEvent struct {
 	// OrganizationId organization ID of the requested service
 	OrganizationId string
 
-	// DeviceId ID of the requested service
+	// DeviceId device ID of the requested service
 	DeviceId string
 
-	// ServiceName ID of the requested service
+	// ServiceName name of the requested service
 	ServiceName string
 
 	// RequestId ID of the request
@@ -40,16 +40,16 @@ type ServiceBrokerInterface interface {
 	// Respond respond to an IoT service request
 	Respond(response *common.ServiceResponse) error
 
-	// Get return an IoT service request and its response by the request ID
+	// Get return an IoT service request and its response (if any) by the request ID
 	Get(requestId string) (*common.ServiceRequestResponse, error)
 
-	// GetAll return a list of IoT service requests and their responses by their organization ID, device ID, and service name
+	// GetAll return a list of IoT service requests and their responses (if any) by their service organization ID, service device ID, and service name
 	GetAll(organizationId string, deviceId string, serviceName string) ([]*common.ServiceRequestResponse, error)
 
-	// Remove remove a (request, response) pair from the ledger
+	// Remove remove a service request and its response (if any) from the ledger
 	Remove(requestId string) error
 
-	// RegisterEvent registers for device registry events
+	// RegisterEvent registers for service request events
 	RegisterEvent(options ...client.ChaincodeEventsOption) (<-chan *ServiceRequestEvent, context.CancelFunc, error)
 }
 
@@ -145,14 +145,14 @@ func (r *ServiceBroker) RegisterEvent(options ...client.ChaincodeEventsOption) (
 			if serviceRequestEvent.Action == "request" {
 				request, err := common.DeserializeServiceRequest(event.Payload)
 				if err != nil {
-					log.Printf("bad service request event payload %#v, action is%s\n", event.Payload, serviceRequestEvent.Action)
+					log.Printf("bad service request event payload %#v, action is %s\n", event.Payload, serviceRequestEvent.Action)
 					continue
 				}
 				serviceRequestEvent.Payload = request
 			} else if serviceRequestEvent.Action == "respond" {
 				response, err := common.DeserializeServiceResponse(event.Payload)
 				if err != nil {
-					log.Printf("bad service request event payload %#v, action is%s\n", event.Payload, serviceRequestEvent.Action)
+					log.Printf("bad service response event payload %#v, action is %s\n", event.Payload, serviceRequestEvent.Action)
 					continue
 				}
 				serviceRequestEvent.Payload = response

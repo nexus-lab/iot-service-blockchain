@@ -333,4 +333,6 @@ func main() {
 	checkAndRemoveRequests(isb)
 	deregisterOneService(isb)
 	deregisterDevice(isb)
+
+	isb.Close()
 }

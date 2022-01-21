@@ -6,6 +6,7 @@ import (
 	"github.com/hyperledger/fabric-gateway/pkg/client"
 )
 
+// ContractInterface the smart contract interface
 type ContractInterface interface {
 	// SubmitTransaction submit a transaction to the ledger
 	SubmitTransaction(name string, args ...string) ([]byte, error)
@@ -14,6 +15,7 @@ type ContractInterface interface {
 	RegisterEvent(options ...client.ChaincodeEventsOption) (<-chan *client.ChaincodeEvent, context.CancelFunc, error)
 }
 
+// Contract default implementation of the smart contract interface
 type Contract struct {
 	network      *client.Network
 	chaincodeId  string

@@ -228,4 +228,6 @@ func main() {
 			break
 		}
 	}
+
+	isb.Close()
 }

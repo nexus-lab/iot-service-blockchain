@@ -63,7 +63,7 @@ func (s *ServiceRequestTestSuite) TestValidate() {
 	assert.Error(s.T(), request.Validate(), "should error on empty service device ID")
 	request.Service.DeviceId = "device1"
 
-	assert.Error(s.T(), request.Validate(), "should error on empty service")
+	assert.Error(s.T(), request.Validate(), "should error on empty service name")
 	request.Service.Name = "service1"
 
 	assert.Error(s.T(), request.Validate(), "should error on empty method")

@@ -128,7 +128,7 @@ func (r *DeviceRegistry) RegisterEvent(options ...client.ChaincodeEventsOption) 
 			if deviceEvent.Action == "register" || deviceEvent.Action == "deregister" {
 				device, err := common.DeserializeDevice(event.Payload)
 				if err != nil {
-					log.Printf("bad device event payload %#v, action is%s\n", event.Payload, deviceEvent.Action)
+					log.Printf("bad device event payload %#v, action is %s\n", event.Payload, deviceEvent.Action)
 					continue
 				}
 				deviceEvent.Payload = device
