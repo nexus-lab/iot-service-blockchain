@@ -104,7 +104,7 @@ async function main() {
 
   // start the following processes after device and services are registered to
   // avoid PHANTOM_READ_CONFLICT
-  log('Waiting for device and services to be registered')
+  log('Waiting for device and services to be registered');
   await new Promise<void>((resolve) => setTimeout(() => resolve(), 30 * 1000));
 
   const device = await getDevice(isb);

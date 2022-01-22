@@ -45,7 +45,9 @@ async function registerDevice(isb: Sdk) {
     expected.name !== actual.name ||
     expected.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime()
   ) {
-    fatal(`inconsistent device information after registration: ${actual.serialize()} != ${expected.serialize()}`);
+    fatal(
+      `inconsistent device information after registration: ${actual.serialize()} != ${expected.serialize()}`,
+    );
   }
 }
 
@@ -81,7 +83,9 @@ async function registerServices(isb: Sdk) {
       service.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime() ||
       service.version !== actual.version
     ) {
-      fatal(`inconsistent service information after registration: ${actual.serialize()} != ${service.serialize()}`);
+      fatal(
+        `inconsistent service information after registration: ${actual.serialize()} != ${service.serialize()}`,
+      );
     }
   }
 
@@ -104,7 +108,9 @@ async function registerServices(isb: Sdk) {
       expected.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime() ||
       expected.version !== actual.version
     ) {
-      fatal(`inconsistent service information after registration: ${actual.serialize()} != ${expected.serialize()}`);
+      fatal(
+        `inconsistent service information after registration: ${actual.serialize()} != ${expected.serialize()}`,
+      );
     }
   }
 }
