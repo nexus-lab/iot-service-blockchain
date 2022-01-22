@@ -81,7 +81,7 @@ export interface ServiceRegistryInterface {
    * @param options chaincode event options
    * @returns an async iterable of the events
    */
-  registerEvent(options: ChaincodeEventsOptions): Promise<CloseableAsyncIterable<ServiceEvent>>;
+  registerEvent(options?: ChaincodeEventsOptions): Promise<CloseableAsyncIterable<ServiceEvent>>;
 }
 
 /**

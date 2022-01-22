@@ -26,12 +26,12 @@ func pipeStd(steamCreator func() (io.ReadCloser, error), print func(line string)
 	return stream
 }
 
-func runInGoroutine(waitGroup *sync.WaitGroup, label, binary string, args ...string) {
-	fmt.Printf("%s Starting %s %s\n", label, binary, strings.Join(args, " "))
+func runInGoroutine(waitGroup *sync.WaitGroup, label, executable string, args ...string) {
+	fmt.Printf("%s Starting %s %s\n", label, executable, strings.Join(args, " "))
 
 	defer waitGroup.Done()
 
-	cmd := exec.Command(binary, args...)
+	cmd := exec.Command(executable, args...)
 
 	print := func(line string) {
 		fmt.Printf("%s %s\n", label, line)

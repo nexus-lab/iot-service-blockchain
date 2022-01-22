@@ -62,7 +62,7 @@ outer:
 		if event.Action == "register" || event.Action == "deregister" {
 			device := event.Payload.(*common.Device)
 			if device.Id != event.DeviceId || device.OrganizationId != event.OrganizationId {
-				log.Fatal("device ID or organization ID mismatch")
+				log.Fatal("event and payload device ID or organization ID mismatch")
 			}
 		}
 
@@ -106,7 +106,7 @@ outer:
 		if event.Action == "register" || event.Action == "deregister" {
 			service := event.Payload.(*common.Service)
 			if service.DeviceId != event.DeviceId || service.OrganizationId != event.OrganizationId || service.Name != event.ServiceName {
-				log.Fatal("device ID, organization ID, or service name mismatch")
+				log.Fatal("event and payload device ID, organization ID, or service name mismatch")
 			}
 		}
 
@@ -151,16 +151,16 @@ outer:
 		if event.Action == "request" {
 			request := event.Payload.(*common.ServiceRequest)
 			if request.Id != event.RequestId {
-				log.Fatal("request ID mismatch")
+				log.Fatal("event and payload request ID mismatch")
 			}
 		} else if event.Action == "respond" {
 			response := event.Payload.(*common.ServiceResponse)
 			if response.RequestId != event.RequestId {
-				log.Fatal("request ID mismatch")
+				log.Fatal("event and payload request ID mismatch")
 			}
 		} else if event.Action == "remove" {
 			if event.Payload.(string) != event.RequestId {
-				log.Fatal("request ID mismatch")
+				log.Fatal("event and payload request ID mismatch")
 			}
 		}
 

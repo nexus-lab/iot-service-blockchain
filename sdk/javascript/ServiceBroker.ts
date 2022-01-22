@@ -99,7 +99,7 @@ export interface ServiceBrokerInterface {
    * @returns an async iterable of the events
    */
   registerEvent(
-    options: ChaincodeEventsOptions,
+    options?: ChaincodeEventsOptions,
   ): Promise<CloseableAsyncIterable<ServiceRequestEvent>>;
 }
 

@@ -12,7 +12,7 @@ export default class Device {
   constructor(
     public id: string,
     public organizationId: string,
-    public name: string,
+    public name: string = '',
     public description: string = '',
     public lastUpdateTime: Date = new Date(0),
   ) {}

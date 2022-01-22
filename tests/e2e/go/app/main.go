@@ -84,7 +84,7 @@ func getServices(isb *sdk.Sdk, device *common.Device) []*common.Service {
 	}
 }
 
-func sendServiceRequest(isb *sdk.Sdk, services []*common.Service) {
+func sendServiceRequests(isb *sdk.Sdk, services []*common.Service) {
 	// avoid MVCC_READ_CONFLICT of services
 	time.Sleep(20 * time.Second)
 
@@ -167,7 +167,7 @@ func main() {
 
 	device := getDevice(isb)
 	services := getServices(isb, device)
-	sendServiceRequest(isb, services)
+	sendServiceRequests(isb, services)
 
 	isb.Close()
 }

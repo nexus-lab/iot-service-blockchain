@@ -74,7 +74,7 @@ export interface DeviceRegistryInterface {
    * @param options chaincode event options
    * @returns an async iterable of the events
    */
-  registerEvent(options: ChaincodeEventsOptions): Promise<CloseableAsyncIterable<DeviceEvent>>;
+  registerEvent(options?: ChaincodeEventsOptions): Promise<CloseableAsyncIterable<DeviceEvent>>;
 }
 
 /**

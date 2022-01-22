@@ -66,6 +66,8 @@ jobs:
           ./tests/scripts/fabric download
           ./tests/scripts/fabric network up
           ./tests/scripts/fabric chaincode deploy
+      - name: Install dependencies
+        run: yarn install
       - name: Run tests
         run: |
           yarn build
