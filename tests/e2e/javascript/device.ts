@@ -29,7 +29,9 @@ async function registerDevice(isb: Sdk) {
     expected.name !== actual.name ||
     expected.lastUpdateTime.valueOf() !== actual.lastUpdateTime.valueOf()
   ) {
-    fatal(`inconsistent device information after registration: ${actual.serialize()} != ${expected.serialize()}`);
+    fatal(
+      `inconsistent device information after registration: ${actual.serialize()} != ${expected.serialize()}`,
+    );
   }
 
   try {

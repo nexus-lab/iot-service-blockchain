@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run tests
-        run: yarn test
+        run: env TZ="America/New_York" yarn test
 
   e2e-test:
     name: End-to-end tests
@@ -71,7 +71,7 @@ jobs:
       - name: Run tests
         run: |
           yarn build
-          node ./tests/e2e/javascript/run.js
+          env TZ="America/New_York" node ./tests/e2e/javascript/run.js
       - name: Clean up Hyperledger Fabric network
         run: |
           ./tests/scripts/fabric network down

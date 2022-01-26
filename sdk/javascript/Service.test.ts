@@ -1,5 +1,5 @@
-import moment from './moment';
 import Service from './Service';
+import moment from './moment';
 
 test('service.getKeyComponents()', () => {
   const service = new Service(

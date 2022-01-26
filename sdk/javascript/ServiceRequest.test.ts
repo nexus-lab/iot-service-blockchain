@@ -1,6 +1,6 @@
-import moment from './moment';
 import Service from './Service';
 import ServiceRequest from './ServiceRequest';
+import moment from './moment';
 
 test('request.getKeyComponents()', () => {
   const request = new ServiceRequest(
