@@ -1,9 +1,0 @@
-{
-  "go.useLanguageServer": true,
-  "gopls": {
-    "experimentalWorkspaceModule": true
-  },
-  "editor.rulers": [
-    100
-  ]
-}

@@ -1,3 +1,4 @@
+import moment from './moment';
 import Service from './Service';
 
 test('service.getKeyComponents()', () => {
@@ -7,7 +8,7 @@ test('service.getKeyComponents()', () => {
     'org1',
     1,
     'Service of Device1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
 
   expect(service.getKeyComponents()).toEqual([
@@ -24,7 +25,7 @@ test('service.toObject()', () => {
     'org1',
     1,
     'Service of Device1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
   const obj = {
     name: 'service1',
@@ -32,7 +33,7 @@ test('service.toObject()', () => {
     organizationId: 'org1',
     version: 1,
     description: 'Service of Device1',
-    lastUpdateTime: new Date('2021-12-12T17:34:00-05:00'),
+    lastUpdateTime: moment('2021-12-12T17:34:00-05:00'),
   };
 
   expect(service.toObject()).toEqual(obj);
@@ -45,12 +46,12 @@ test('service.serialize()', () => {
     'org1',
     1,
     'Service of Device1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
   const serialized =
     '{"name":"service1","deviceId":"device1","organizationId":"org1",' +
     '"version":1,"description":"Service of Device1",' +
-    '"lastUpdateTime":"2021-12-12T22:34:00.000Z"}';
+    '"lastUpdateTime":"2021-12-12T17:34:00.000-05:00"}';
 
   expect(service.serialize()).toEqual(serialized);
 });
@@ -71,7 +72,7 @@ test('service.validate()', () => {
   service.version = 1;
 
   expect(() => service.validate()).toThrow(/last update time/);
-  service.lastUpdateTime = new Date('2021-12-12T17:34:00-05:00');
+  service.lastUpdateTime = moment('2021-12-12T17:34:00-05:00');
 
   expect(() => service.validate()).not.toThrow();
 });
@@ -83,7 +84,7 @@ test('Service.fromObject()', () => {
     organizationId: 'org1',
     version: 1,
     description: 'Service of Device1',
-    lastUpdateTime: new Date('2021-12-12T17:34:00-05:00'),
+    lastUpdateTime: moment('2021-12-12T17:34:00-05:00'),
   };
 
   const service = Service.fromObject(obj);
@@ -102,7 +103,7 @@ test('Service.deserialize()', () => {
     'org1',
     1,
     'Service of Device1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
   const serialized =
     '{"name":"service1","deviceId":"device1","organizationId":"org1",' +

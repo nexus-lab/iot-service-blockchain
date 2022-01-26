@@ -1,3 +1,5 @@
+import moment from './moment';
+
 /**
  * An IoT service state
  */
@@ -16,7 +18,7 @@ export default class Service {
     public organizationId: string,
     public version: number = 0,
     public description: string = '',
-    public lastUpdateTime: Date = new Date(0),
+    public lastUpdateTime: moment.Moment = moment(0),
   ) {}
 
   /**
@@ -74,7 +76,7 @@ export default class Service {
     if (this.version !== (this.version | 0) || this.version < 0) {
       throw new Error('service version must be a positive integer');
     }
-    if (this.lastUpdateTime.getTime() === 0) {
+    if (this.lastUpdateTime.valueOf() === 0) {
       throw new Error('missing service last update time in service definition');
     }
   }
@@ -92,7 +94,7 @@ export default class Service {
       obj.organizationId,
       obj.version ? obj.version : 0,
       obj.description ? obj.description : '',
-      obj.lastUpdateTime ? new Date(obj.lastUpdateTime) : new Date(0),
+      obj.lastUpdateTime ? moment(obj.lastUpdateTime) : moment(0),
     );
   }
 

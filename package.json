@@ -33,6 +33,7 @@
     "@fidm/x509": "^1.2.1",
     "@grpc/grpc-js": "^1.5.3",
     "@hyperledger/fabric-gateway": "^1.0.0",
+    "moment": "^2.29.1",
     "uuid": "^8.3.2"
   }
 }

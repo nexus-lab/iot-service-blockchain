@@ -1,4 +1,5 @@
 import Device from './Device';
+import moment from './moment';
 
 test('device.getKeyComponents()', () => {
   const device = new Device(
@@ -6,7 +7,7 @@ test('device.getKeyComponents()', () => {
     'org1',
     'device1',
     'Device of Org1 User1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
 
   expect(device.getKeyComponents()).toEqual([device.organizationId, device.id]);
@@ -18,14 +19,14 @@ test('device.toObject()', () => {
     'org1',
     'device1',
     'Device of Org1 User1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
   const obj = {
     id: 'device1',
     organizationId: 'org1',
     name: 'device1',
     description: 'Device of Org1 User1',
-    lastUpdateTime: new Date('2021-12-12T17:34:00-05:00'),
+    lastUpdateTime: moment('2021-12-12T17:34:00-05:00'),
   };
 
   expect(device.toObject()).toEqual(obj);
@@ -37,12 +38,12 @@ test('device.serialize()', () => {
     'org1',
     'device1',
     'Device of Org1 User1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
   const serialized =
     '{"id":"device1","organizationId":"org1","name":"device1",' +
     '"description":"Device of Org1 User1",' +
-    '"lastUpdateTime":"2021-12-12T22:34:00.000Z"}';
+    '"lastUpdateTime":"2021-12-12T17:34:00.000-05:00"}';
 
   expect(device.serialize()).toEqual(serialized);
 });
@@ -60,7 +61,7 @@ test('device.validate()', () => {
   device.name = 'device1';
 
   expect(() => device.validate()).toThrow(/last update time/);
-  device.lastUpdateTime = new Date('2021-12-12T17:34:00-05:00');
+  device.lastUpdateTime = moment('2021-12-12T17:34:00-05:00');
 
   expect(() => device.validate()).not.toThrow();
 });
@@ -71,7 +72,7 @@ test('Device.fromObject()', () => {
     organizationId: 'org1',
     name: 'device1',
     description: 'Device of Org1 User1',
-    lastUpdateTime: new Date('2021-12-12T17:34:00-05:00'),
+    lastUpdateTime: moment('2021-12-12T17:34:00-05:00'),
   };
 
   const device = Device.fromObject(obj);
@@ -88,7 +89,7 @@ test('Device.deserialize()', () => {
     'org1',
     'device1',
     'Device of Org1 User1',
-    new Date('2021-12-12T17:34:00-05:00'),
+    moment('2021-12-12T17:34:00-05:00'),
   );
   const serialized =
     '{"id":"device1","organizationId":"org1","name":"device1",' +

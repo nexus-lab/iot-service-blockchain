@@ -1,5 +1,7 @@
 import { parse as uuidparse } from 'uuid';
 
+import moment from './moment';
+
 /**
  * An IoT service response
  */
@@ -12,7 +14,7 @@ export default class ServiceResponse {
    */
   constructor(
     public requestId: string,
-    public time: Date,
+    public time: moment.Moment,
     public statusCode: number = 0,
     public returnValue: string = '',
   ) {}
@@ -60,7 +62,7 @@ export default class ServiceResponse {
     } catch {
       throw new Error('invalid request ID in response definition');
     }
-    if (this.time.getTime() === 0) {
+    if (this.time.valueOf() === 0) {
       throw new Error('missing response time in response definition');
     }
   }
@@ -74,7 +76,7 @@ export default class ServiceResponse {
   static fromObject(obj: { [key: string]: any }): ServiceResponse {
     return new ServiceResponse(
       obj.requestId,
-      new Date(obj.time),
+      moment(obj.time),
       obj.statusCode ? obj.statusCode : 0,
       obj.returnValue ? obj.returnValue : '',
     );

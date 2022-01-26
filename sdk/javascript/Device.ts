@@ -1,3 +1,5 @@
+import moment from './moment';
+
 /**
  * An IoT device state
  */
@@ -14,7 +16,7 @@ export default class Device {
     public organizationId: string,
     public name: string = '',
     public description: string = '',
-    public lastUpdateTime: Date = new Date(0),
+    public lastUpdateTime: moment.Moment = moment(0),
   ) {}
 
   /**
@@ -65,7 +67,7 @@ export default class Device {
     if (this.name === '') {
       throw new Error('missing device name in device definition');
     }
-    if (this.lastUpdateTime.getTime() === 0) {
+    if (this.lastUpdateTime.valueOf() === 0) {
       throw new Error('missing device last update time in device definition');
     }
   }
@@ -82,7 +84,7 @@ export default class Device {
       obj.organizationId,
       obj.name,
       obj.description ? obj.description : '',
-      obj.lastUpdateTime ? new Date(obj.lastUpdateTime) : new Date(0),
+      obj.lastUpdateTime ? moment(obj.lastUpdateTime) : moment(0),
     );
   }
 

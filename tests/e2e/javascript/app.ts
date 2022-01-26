@@ -5,6 +5,7 @@ import Sdk from '../../../sdk/javascript/Sdk';
 import Service from '../../../sdk/javascript/Service';
 import ServiceRequest from '../../../sdk/javascript/ServiceRequest';
 import ServiceResponse from '../../../sdk/javascript/ServiceResponse';
+import moment from '../../../sdk/javascript/moment';
 import { fatal, getCredentials, log } from './util';
 
 const ORG_ID = 'Org2MSP';
@@ -48,7 +49,7 @@ async function sendServiceRequests(isb: Sdk, services: Service[]) {
 
   const requests: { [id: string]: ServiceRequest } = {};
   for (const service of services) {
-    const request = new ServiceRequest(uuidv4(), new Date(), service, 'GET', ['1', '2', '3']);
+    const request = new ServiceRequest(uuidv4(), moment(), service, 'GET', ['1', '2', '3']);
 
     log(`Sending request ${request.serialize()}`);
     await isb.getServiceBroker().request(request);

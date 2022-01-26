@@ -1,6 +1,7 @@
 import { parse as uuidparse } from 'uuid';
 
 import Service from './Service';
+import moment from './moment';
 
 /**
  * An IoT service request
@@ -15,7 +16,7 @@ export default class ServiceRequest {
    */
   constructor(
     public id: string,
-    public time: Date,
+    public time: moment.Moment,
     public service: Service,
     public method: string,
     public args: string[] = [],
@@ -75,7 +76,7 @@ export default class ServiceRequest {
     if (this.method === '') {
       throw new Error('missing request method in request definition');
     }
-    if (this.time.getTime() === 0) {
+    if (this.time.valueOf() === 0) {
       throw new Error('missing request time in request definition');
     }
   }
@@ -89,7 +90,7 @@ export default class ServiceRequest {
   static fromObject(obj: { [key: string]: any }): ServiceRequest {
     return new ServiceRequest(
       obj.id,
-      new Date(obj.time),
+      moment(obj.time),
       Service.fromObject(obj.service),
       obj.method,
       obj.arguments ? obj.arguments : [],

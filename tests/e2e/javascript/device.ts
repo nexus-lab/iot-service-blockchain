@@ -3,6 +3,7 @@ import Sdk from '../../../sdk/javascript/Sdk';
 import Service from '../../../sdk/javascript/Service';
 import ServiceRequest from '../../../sdk/javascript/ServiceRequest';
 import ServiceResponse from '../../../sdk/javascript/ServiceResponse';
+import moment from '../../../sdk/javascript/moment';
 import { fatal, getCredentials, log } from './util';
 
 const ORG_ID = 'Org1MSP';
@@ -17,7 +18,7 @@ async function registerDevice(isb: Sdk) {
     isb.getOrganizationId(),
     'device1',
     'My first device',
-    new Date(),
+    moment(),
   );
 
   await isb.getDeviceRegistry().register(expected);
@@ -26,9 +27,9 @@ async function registerDevice(isb: Sdk) {
   let actual = await isb.getDeviceRegistry().get(isb.getOrganizationId(), expected.id);
   if (
     expected.name !== actual.name ||
-    expected.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime()
+    expected.lastUpdateTime.valueOf() !== actual.lastUpdateTime.valueOf()
   ) {
-    fatal(`inconsistent device information after registration: ${actual} != ${expected}`);
+    fatal(`inconsistent device information after registration: ${actual.serialize()} != ${expected.serialize()}`);
   }
 
   try {
@@ -43,7 +44,7 @@ async function registerDevice(isb: Sdk) {
   actual = devices[0];
   if (
     expected.name !== actual.name ||
-    expected.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime()
+    expected.lastUpdateTime.valueOf() !== actual.lastUpdateTime.valueOf()
   ) {
     fatal(
       `inconsistent device information after registration: ${actual.serialize()} != ${expected.serialize()}`,
@@ -59,7 +60,7 @@ async function registerServices(isb: Sdk) {
       isb.getOrganizationId(),
       1,
       'My first service',
-      new Date(),
+      moment(),
     ),
     new Service(
       'service2',
@@ -67,7 +68,7 @@ async function registerServices(isb: Sdk) {
       isb.getOrganizationId(),
       1,
       'My second service',
-      new Date(),
+      moment(),
     ),
   ];
 
@@ -80,7 +81,7 @@ async function registerServices(isb: Sdk) {
       .get(isb.getOrganizationId(), service.deviceId, service.name);
     if (
       service.name !== actual.name ||
-      service.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime() ||
+      service.lastUpdateTime.valueOf() !== actual.lastUpdateTime.valueOf() ||
       service.version !== actual.version
     ) {
       fatal(
@@ -105,7 +106,7 @@ async function registerServices(isb: Sdk) {
 
     if (
       expected.name !== actual.name ||
-      expected.lastUpdateTime.getTime() !== actual.lastUpdateTime.getTime() ||
+      expected.lastUpdateTime.valueOf() !== actual.lastUpdateTime.valueOf() ||
       expected.version !== actual.version
     ) {
       fatal(
@@ -137,7 +138,7 @@ async function handleRequests(isb: Sdk) {
 
     const response = new ServiceResponse(
       request.id,
-      new Date(),
+      moment(),
       0,
       [request.method, ...request.args].join(','),
     );

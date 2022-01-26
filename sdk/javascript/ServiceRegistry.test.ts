@@ -17,46 +17,54 @@ test('serviceRegistry.register()', async () => {
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceRegistry.register(new Service('service2', 'device2', 'org2'))).rejects.toThrow();
+  await expect(
+    serviceRegistry.register(new Service('service2', 'device2', 'org2')),
+  ).rejects.toThrow();
 });
 
-test('serviceRegistry.get()', () => {
+test('serviceRegistry.get()', async () => {
   const contract = mockContract();
   const serviceRegistry = new ServiceRegistry(contract);
 
   const service = new Service('service1', 'device1', 'org1');
   contract.submitTransaction = jest.fn().mockResolvedValue(utf8Encoder.encode(service.serialize()));
 
-  expect(serviceRegistry.get('org1', 'device1', 'service1')).resolves.toEqual(service);
+  const actual = await serviceRegistry.get('org1', 'device1', 'service1');
+  expect(actual.serialize()).toEqual(service.serialize());
   expect(contract.submitTransaction).toHaveBeenCalledWith('Get', 'org1', 'device1', 'service1');
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceRegistry.get('org2', 'device2', 'service2')).rejects.toThrow();
+  await expect(serviceRegistry.get('org2', 'device2', 'service2')).rejects.toThrow();
 });
 
-test('serviceRegistry.getAll()', () => {
+test('serviceRegistry.getAll()', async () => {
   const contract = mockContract();
   const serviceRegistry = new ServiceRegistry(contract);
 
-  const services = [
-    new Service('service1', 'device1', 'org1').toObject(),
-    new Service('service2', 'device2', 'org2').toObject(),
+  const expected = [
+    new Service('service1', 'device1', 'org1'),
+    new Service('service2', 'device2', 'org2'),
   ];
   contract.submitTransaction = jest
     .fn()
-    .mockResolvedValue(utf8Encoder.encode(JSON.stringify(services)));
+    .mockResolvedValue(
+      utf8Encoder.encode(JSON.stringify(expected.map((service) => service.toObject()))),
+    );
 
-  expect(serviceRegistry.getAll('org1', 'device1')).resolves.toEqual(services);
+  const actual = await serviceRegistry.getAll('org1', 'device1');
+  for (let i = 0; i < 2; i++) {
+    expect(actual[i].serialize()).toEqual(expected[i].serialize());
+  }
   expect(contract.submitTransaction).toHaveBeenCalledWith('GetAll', 'org1', 'device1');
 
   contract.submitTransaction = jest.fn().mockResolvedValue(utf8Encoder.encode('[]'));
 
-  expect(serviceRegistry.getAll('org2', 'device2')).resolves.toEqual([]);
+  await expect(serviceRegistry.getAll('org2', 'device2')).resolves.toEqual([]);
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceRegistry.getAll('org3', 'device3')).rejects.toThrow();
+  await expect(serviceRegistry.getAll('org3', 'device3')).rejects.toThrow();
 });
 
 test('serviceRegistry.deregister()', async () => {
@@ -69,7 +77,9 @@ test('serviceRegistry.deregister()', async () => {
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceRegistry.deregister(new Service('service2', 'device2', 'org2'))).rejects.toThrow();
+  await expect(
+    serviceRegistry.deregister(new Service('service2', 'device2', 'org2')),
+  ).rejects.toThrow();
 });
 
 test('serviceRegistry.registerEvent()', async () => {
@@ -112,5 +122,5 @@ test('serviceRegistry.registerEvent()', async () => {
 
   contract.registerEvent = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceRegistry.registerEvent()).rejects.toThrow();
+  await expect(serviceRegistry.registerEvent()).rejects.toThrow();
 });

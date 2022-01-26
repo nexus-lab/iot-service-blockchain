@@ -2,19 +2,20 @@ import Service from './Service';
 import ServiceRequest from './ServiceRequest';
 import ServiceRequestResponse from './ServiceRequestResponse';
 import ServiceResponse from './ServiceResponse';
+import moment from './moment';
 
 test('pair.toObject()', () => {
   const pair = new ServiceRequestResponse(
     new ServiceRequest(
       'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      new Date('2021-12-12T17:34:00-05:00'),
+      moment('2021-12-12T17:34:00-05:00'),
       new Service('service1', 'device1', 'org1'),
       'GET',
       ['1', '2', '3'],
     ),
     new ServiceResponse(
       'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      new Date('2021-12-12T17:34:00-05:00'),
+      moment('2021-12-12T17:34:00-05:00'),
       0,
       '["a","b","c"]',
     ),
@@ -22,21 +23,21 @@ test('pair.toObject()', () => {
   const obj = {
     request: {
       id: 'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      time: new Date('2021-12-12T17:34:00-05:00'),
+      time: moment('2021-12-12T17:34:00-05:00'),
       service: {
         name: 'service1',
         deviceId: 'device1',
         organizationId: 'org1',
         version: 0,
         description: '',
-        lastUpdateTime: new Date(0),
+        lastUpdateTime: moment(0),
       },
       method: 'GET',
       arguments: ['1', '2', '3'],
     },
     response: {
       requestId: 'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      time: new Date('2021-12-12T17:34:00-05:00'),
+      time: moment('2021-12-12T17:34:00-05:00'),
       statusCode: 0,
       returnValue: '["a","b","c"]',
     },
@@ -49,25 +50,25 @@ test('pair.serialize()', () => {
   const pair = new ServiceRequestResponse(
     new ServiceRequest(
       'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      new Date('2021-12-12T17:34:00-05:00'),
+      moment('2021-12-12T17:34:00-05:00'),
       new Service('service1', 'device1', 'org1'),
       'GET',
       ['1', '2', '3'],
     ),
     new ServiceResponse(
       'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      new Date('2021-12-12T17:34:00-05:00'),
+      moment('2021-12-12T17:34:00-05:00'),
       0,
       '["a","b","c"]',
     ),
   );
 
   const serialized =
-    '{"request":{"id":"ffbc9005-c62a-4563-a8f7-b32bba27d707","time":"2021-12-12T22:34:00.000Z",' +
+    '{"request":{"id":"ffbc9005-c62a-4563-a8f7-b32bba27d707","time":"2021-12-12T17:34:00.000-05:00",' +
     '"service":{"name":"service1","deviceId":"device1","organizationId":"org1","version":0,' +
-    '"description":"","lastUpdateTime":"1970-01-01T00:00:00.000Z"},"method":"GET",' +
+    '"description":"","lastUpdateTime":"1969-12-31T19:00:00.000-05:00"},"method":"GET",' +
     '"arguments":["1","2","3"]},"response":{"requestId":"ffbc9005-c62a-4563-a8f7-b32bba27d707",' +
-    '"time":"2021-12-12T22:34:00.000Z","statusCode":0,"returnValue":"[\\"a\\",\\"b\\",\\"c\\"]"}}';
+    '"time":"2021-12-12T17:34:00.000-05:00","statusCode":0,"returnValue":"[\\"a\\",\\"b\\",\\"c\\"]"}}';
 
   expect(pair.serialize()).toEqual(serialized);
 });
@@ -76,7 +77,7 @@ test('ServiceRequestResponse.fromObject()', () => {
   const obj = {
     request: {
       id: 'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      time: new Date('2021-12-12T17:34:00-05:00'),
+      time: moment('2021-12-12T17:34:00-05:00'),
       service: {
         name: 'service1',
         deviceId: 'device1',
@@ -87,7 +88,7 @@ test('ServiceRequestResponse.fromObject()', () => {
     },
     response: {
       requestId: 'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      time: new Date('2021-12-12T17:34:00-05:00'),
+      time: moment('2021-12-12T17:34:00-05:00'),
       statusCode: 0,
       returnValue: '["a","b","c"]',
     },
@@ -111,25 +112,25 @@ test('ServiceRequestResponse.deserialize()', () => {
   const expected = new ServiceRequestResponse(
     new ServiceRequest(
       'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      new Date('2021-12-12T17:34:00-05:00'),
+      moment('2021-12-12T17:34:00-05:00'),
       new Service('service1', 'device1', 'org1'),
       'GET',
       ['1', '2', '3'],
     ),
     new ServiceResponse(
       'ffbc9005-c62a-4563-a8f7-b32bba27d707',
-      new Date('2021-12-12T17:34:00-05:00'),
+      moment('2021-12-12T17:34:00-05:00'),
       0,
       '["a","b","c"]',
     ),
   );
 
   const serialized =
-    '{"request":{"id":"ffbc9005-c62a-4563-a8f7-b32bba27d707","time":"2021-12-12T22:34:00.000Z",' +
+    '{"request":{"id":"ffbc9005-c62a-4563-a8f7-b32bba27d707","time":"2021-12-12T17:34:00-05:00",' +
     '"service":{"name":"service1","deviceId":"device1","organizationId":"org1","version":0,' +
-    '"description":"","lastUpdateTime":"1970-01-01T00:00:00.000Z"},"method":"GET",' +
+    '"description":"","lastUpdateTime":"1969-12-31T19:00:00-05:00"},"method":"GET",' +
     '"arguments":["1","2","3"]},"response":{"requestId":"ffbc9005-c62a-4563-a8f7-b32bba27d707",' +
-    '"time":"2021-12-12T22:34:00.000Z","statusCode":0,"returnValue":"[\\"a\\",\\"b\\",\\"c\\"]"}}';
+    '"time":"2021-12-12T17:34:00-05:00","statusCode":0,"returnValue":"[\\"a\\",\\"b\\",\\"c\\"]"}}';
 
   const actual = ServiceRequestResponse.deserialize(serialized);
   expect(actual.request.id).toEqual(expected.request.id);

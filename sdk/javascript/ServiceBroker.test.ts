@@ -6,13 +6,14 @@ import ServiceBroker from './ServiceBroker';
 import ServiceRequest from './ServiceRequest';
 import ServiceRequestResponse from './ServiceRequestResponse';
 import ServiceResponse from './ServiceResponse';
+import moment from './moment';
 
 const utf8Encoder = new TextEncoder();
 const mockContract = () => ({ submitTransaction: jest.fn(), registerEvent: jest.fn() });
 const createRequest = (id: number) =>
   new ServiceRequest(
     `request${id}`,
-    new Date(),
+    moment(),
     new Service(`service${id}`, `device${id}`, `org${id}`),
     'GET',
     [],
@@ -28,62 +29,69 @@ test('serviceBroker.request()', async () => {
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceBroker.request(createRequest(2))).rejects.toThrow();
+  await expect(serviceBroker.request(createRequest(2))).rejects.toThrow();
 });
 
 test('serviceBroker.respond()', async () => {
   const contract = mockContract();
   const serviceBroker = new ServiceBroker(contract);
 
-  const response = new ServiceResponse('request1', new Date());
+  const response = new ServiceResponse('request1', moment());
   await serviceBroker.respond(response);
   expect(contract.submitTransaction).toHaveBeenCalledWith('Respond', response.serialize());
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceBroker.respond(new ServiceResponse('request2', new Date()))).rejects.toThrow();
+  await expect(serviceBroker.respond(new ServiceResponse('request2', moment()))).rejects.toThrow();
 });
 
-test('serviceBroker.get()', () => {
+test('serviceBroker.get()', async () => {
   const contract = mockContract();
   const serviceBroker = new ServiceBroker(contract);
 
-  const pair = new ServiceRequestResponse(
+  const expected = new ServiceRequestResponse(
     createRequest(1),
-    new ServiceResponse('request1', new Date()),
+    new ServiceResponse('request1', moment()),
   );
-  contract.submitTransaction = jest.fn().mockResolvedValue(utf8Encoder.encode(pair.serialize()));
+  contract.submitTransaction = jest
+    .fn()
+    .mockResolvedValue(utf8Encoder.encode(expected.serialize()));
 
-  expect(serviceBroker.get('request1')).resolves.toEqual(pair);
+  const actual = await serviceBroker.get('request1');
+  expect(actual.serialize()).toEqual(expected.serialize());
   expect(contract.submitTransaction).toHaveBeenCalledWith('Get', 'request1');
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceBroker.get('request2')).rejects.toThrow();
+  await expect(serviceBroker.get('request2')).rejects.toThrow();
 });
 
-test('serviceBroker.getAll()', () => {
+test('serviceBroker.getAll()', async () => {
   const contract = mockContract();
   const serviceBroker = new ServiceBroker(contract);
 
-  const pairs = [
-    new ServiceRequestResponse(createRequest(1), new ServiceResponse('request1', new Date())),
-    new ServiceRequestResponse(createRequest(2), new ServiceResponse('request2', new Date())),
+  const expected = [
+    new ServiceRequestResponse(createRequest(1), new ServiceResponse('request1', moment())),
+    new ServiceRequestResponse(createRequest(2), new ServiceResponse('request2', moment())),
   ];
   contract.submitTransaction = jest
     .fn()
-    .mockResolvedValue(utf8Encoder.encode(JSON.stringify(pairs.map((pair) => pair.toObject()))));
+    .mockResolvedValue(utf8Encoder.encode(JSON.stringify(expected.map((pair) => pair.toObject()))));
 
-  expect(serviceBroker.getAll('org1', 'device1', 'service1')).resolves.toEqual(pairs);
+  const actual = await serviceBroker.getAll('org1', 'device1', 'service1');
+  for (let i = 0; i < 2; i++) {
+    expect(actual[i].serialize()).toEqual(expected[i].serialize());
+  }
+
   expect(contract.submitTransaction).toHaveBeenCalledWith('GetAll', 'org1', 'device1', 'service1');
 
   contract.submitTransaction = jest.fn().mockResolvedValue(utf8Encoder.encode('[]'));
 
-  expect(serviceBroker.getAll('org2', 'device2', 'service2')).resolves.toEqual([]);
+  await expect(serviceBroker.getAll('org2', 'device2', 'service2')).resolves.toEqual([]);
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceBroker.getAll('org3', 'device3', 'service3')).rejects.toThrow();
+  await expect(serviceBroker.getAll('org3', 'device3', 'service3')).rejects.toThrow();
 });
 
 test('serviceBroker.remove()', async () => {
@@ -95,7 +103,7 @@ test('serviceBroker.remove()', async () => {
 
   contract.submitTransaction = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceBroker.remove('request2')).rejects.toThrow();
+  await expect(serviceBroker.remove('request2')).rejects.toThrow();
 });
 
 test('serviceBroker.registerEvent()', async () => {
@@ -113,7 +121,7 @@ test('serviceBroker.registerEvent()', async () => {
         };
       }
       for (let i = 2; i < 4; i++) {
-        const response = new ServiceResponse(`request${i}`, new Date(), 1, '[]');
+        const response = new ServiceResponse(`request${i}`, moment(), 1, '[]');
 
         yield {
           eventName: `request://org${i}/device${i}/service${i}/request${i}/respond`,
@@ -167,5 +175,5 @@ test('serviceBroker.registerEvent()', async () => {
 
   contract.registerEvent = jest.fn().mockRejectedValue(new Error());
 
-  expect(serviceBroker.registerEvent()).rejects.toThrow();
+  await expect(serviceBroker.registerEvent()).rejects.toThrow();
 });
