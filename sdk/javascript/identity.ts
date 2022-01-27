@@ -10,73 +10,69 @@ export function parseCertificate(certificate: string) {
   return Certificate.fromPEM(Buffer.from(certificate, 'utf-8'));
 }
 
+const DN_ORDER = ['CN', 'SERIALNUMBER', 'C', 'L', 'ST', 'STREET', 'O', 'OU', 'POSTALCODE'];
+const OID_MAP: { [key: string]: string } = {
+  '2.5.4.3': 'CN',
+  '2.5.4.5': 'SERIALNUMBER',
+  '2.5.4.6': 'C',
+  '2.5.4.7': 'L',
+  '2.5.4.8': 'ST',
+  '2.5.4.9': 'STREET',
+  '2.5.4.10': 'O',
+  '2.5.4.11': 'OU',
+  '2.5.4.17': 'POSTALCODE',
+};
+
+function escapeDN(value: string) {
+  return value
+    .replace('\\', '\\\\')
+    .replace(',', '\\,')
+    .replace('+', '\\+')
+    .replace('"', '\\"')
+    .replace('<', '\\<')
+    .replace('>', '\\>')
+    .replace(';', '\\;')
+    .replace(/^ /, '\\ ')
+    .replace(/ $/, '\\ ')
+    .replace(/^#/, '\\#');
+}
+
+function mapDN(dn: DistinguishedName) {
+  const map = new Map<string, string[]>();
+
+  for (const attribute of dn.attributes) {
+    const type = OID_MAP[attribute.oid] ?? attribute.oid;
+
+    // CN and SERIALNUMBER are single-value field
+    if (!map.has(type) || type === 'CN' || type === 'SERIALNUMBER') {
+      map.set(type, []);
+    }
+
+    map.get(type)!.push(attribute.value);
+  }
+
+  for (const values of map.values()) {
+    values.sort();
+  }
+
+  return map;
+}
+
 /**
  * Returns a string representation of the distinguished name,
  * roughly following the RFC 2253 Distinguished Names syntax.
+ * Distinguished Names are sorted by their OID name.
  */
 function formatDN(dn: DistinguishedName) {
-  const attributes: [string, string[]][] = [
-    ['C', []], // Country
-    ['ST', []], // Province
-    ['L', []], // Locality
-    ['STREET', []], // StreetAddress
-    ['POSTALCODE', []], // PostalCode
-    ['O', []], // Organization
-    ['OU', []], // OrganizationalUnit
-    ['CN', []], // CommonName
-    ['SERIALNUMBER', []], // SerialNumber
-  ];
+  const dnMap = mapDN(dn);
 
-  for (const attribute of dn.attributes) {
-    switch (attribute.oid) {
-      case '2.5.4.6': // Country
-        attributes[0][1].push(attribute.value);
-        break;
-      case '2.5.4.8': // Province
-        attributes[1][1].push(attribute.value);
-        break;
-      case '2.5.4.7': // Locality
-        attributes[2][1].push(attribute.value);
-        break;
-      case '2.5.4.9': // StreetAddress
-        attributes[3][1].push(attribute.value);
-        break;
-      case '2.5.4.17': // PostalCode
-        attributes[4][1].push(attribute.value);
-        break;
-      case '2.5.4.10': // Organization
-        attributes[5][1].push(attribute.value);
-        break;
-      case '2.5.4.11': // OrganizationalUnit
-        attributes[6][1].push(attribute.value);
-        break;
-      case '2.5.4.3': // Common Name (CN)
-        attributes[7][1] = [attribute.value];
-        break;
-      case '2.5.4.5': // Serial Number
-        attributes[8][1] = [attribute.value];
-        break;
-    }
-  }
-
-  const escape = (value: string) => {
-    return value
-      .replace('\\', '\\\\')
-      .replace(',', '\\,')
-      .replace('+', '\\+')
-      .replace('"', '\\"')
-      .replace('<', '\\<')
-      .replace('>', '\\>')
-      .replace(';', '\\;')
-      .replace(/^ /, '\\ ')
-      .replace(/ $/, '\\ ')
-      .replace(/^#/, '\\#');
-  };
-
-  return [...attributes]
-    .reverse()
-    .filter(([, values]) => values.length)
-    .map(([key, values]) => values.map((value) => `${key}=${escape(value)}`).join('+'))
+  return DN_ORDER.filter((type) => dnMap.has(type))
+    .map((type) =>
+      dnMap
+        .get(type)!
+        .map((value) => `${type}=${escapeDN(value)}`)
+        .join('+'),
+    )
     .join(',');
 }
 
