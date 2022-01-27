@@ -44,15 +44,19 @@ func (s *DeviceTestSuite) TestValidate() {
 	device := Device{}
 
 	assert.Error(s.T(), device.Validate(), "should error on empty ID")
+	assert.Regexp(s.T(), "device ID", device.Validate().Error())
 	device.Id = "device1"
 
 	assert.Error(s.T(), device.Validate(), "should error on empty organization ID")
+	assert.Regexp(s.T(), "organization ID", device.Validate().Error())
 	device.OrganizationId = "org1"
 
 	assert.Error(s.T(), device.Validate(), "should error on empty name")
+	assert.Regexp(s.T(), "device name", device.Validate().Error())
 	device.Name = "device1"
 
 	assert.Error(s.T(), device.Validate(), "should error on empty last update time")
+	assert.Regexp(s.T(), "last update time", device.Validate().Error())
 	updateTime, _ := time.Parse(time.RFC3339, "2021-12-12T17:34:00-05:00")
 	device.LastUpdateTime = updateTime
 

@@ -46,18 +46,27 @@ func (s *ServiceTestSuite) TestValidate() {
 	service := Service{}
 
 	assert.Error(s.T(), service.Validate(), "should error on empty name")
+	assert.Regexp(s.T(), "service name", service.Validate().Error())
 	service.Name = "service1"
 
 	assert.Error(s.T(), service.Validate(), "should error on empty device ID")
+	assert.Regexp(s.T(), "device ID", service.Validate().Error())
 	service.DeviceId = "device1"
 
 	assert.Error(s.T(), service.Validate(), "should error on empty organization ID")
+	assert.Regexp(s.T(), "organization ID", service.Validate().Error())
 	service.OrganizationId = "org1"
 
 	assert.Error(s.T(), service.Validate(), "should error on empty version")
+	assert.Regexp(s.T(), "service version", service.Validate().Error())
+	service.Version = -1
+
+	assert.Error(s.T(), service.Validate(), "should error on negative version")
+	assert.Regexp(s.T(), "positive integer", service.Validate().Error())
 	service.Version = 1
 
 	assert.Error(s.T(), service.Validate(), "should error on empty last update time")
+	assert.Regexp(s.T(), "last update time", service.Validate().Error())
 	updateTime, _ := time.Parse(time.RFC3339, "2021-12-12T17:34:00-05:00")
 	service.LastUpdateTime = updateTime
 

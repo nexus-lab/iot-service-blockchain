@@ -55,21 +55,27 @@ func (s *ServiceRequestTestSuite) TestValidate() {
 
 	request.Id = "123456"
 	assert.Error(s.T(), request.Validate(), "should error on invalid ID")
+	assert.Regexp(s.T(), "request ID", request.Validate().Error())
 	request.Id = "ffbc9005-c62a-4563-a8f7-b32bba27d707"
 
 	assert.Error(s.T(), request.Validate(), "should error on empty serivce organization ID")
+	assert.Regexp(s.T(), "requested service", request.Validate().Error())
 	request.Service.OrganizationId = "org1"
 
 	assert.Error(s.T(), request.Validate(), "should error on empty service device ID")
+	assert.Regexp(s.T(), "requested service", request.Validate().Error())
 	request.Service.DeviceId = "device1"
 
 	assert.Error(s.T(), request.Validate(), "should error on empty service name")
+	assert.Regexp(s.T(), "requested service", request.Validate().Error())
 	request.Service.Name = "service1"
 
 	assert.Error(s.T(), request.Validate(), "should error on empty method")
+	assert.Regexp(s.T(), "request method", request.Validate().Error())
 	request.Method = "GET"
 
 	assert.Error(s.T(), request.Validate(), "should error on empty last update time")
+	assert.Regexp(s.T(), "request time", request.Validate().Error())
 	updateTime, _ := time.Parse(time.RFC3339, "2021-12-12T17:34:00-05:00")
 	request.Time = updateTime
 

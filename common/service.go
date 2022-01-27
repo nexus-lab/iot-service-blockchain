@@ -51,6 +51,9 @@ func (s *Service) Validate() error {
 	if s.Version == 0 {
 		return fmt.Errorf("missing service version in service definition")
 	}
+	if s.Version < 0 {
+		return fmt.Errorf("service version must be a positive integer")
+	}
 	if s.LastUpdateTime.IsZero() {
 		return fmt.Errorf("missing service last update time in device definition")
 	}

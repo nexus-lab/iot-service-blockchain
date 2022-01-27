@@ -44,9 +44,11 @@ func (s *ServiceResponseTestSuite) TestValidate() {
 
 	response.RequestId = "123456"
 	assert.Error(s.T(), response.Validate(), "should error on invalid ID")
+	assert.Regexp(s.T(), "request ID", response.Validate().Error())
 	response.RequestId = "ffbc9005-c62a-4563-a8f7-b32bba27d707"
 
 	assert.Error(s.T(), response.Validate(), "should error on empty last update time")
+	assert.Regexp(s.T(), "response time", response.Validate().Error())
 	updateTime, _ := time.Parse(time.RFC3339, "2021-12-12T17:34:00-05:00")
 	response.Time = updateTime
 
