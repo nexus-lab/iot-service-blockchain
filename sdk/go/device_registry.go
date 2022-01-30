@@ -143,7 +143,8 @@ func (r *DeviceRegistry) RegisterEvent(options ...client.ChaincodeEventsOption) 
 	return dest, cancel, err
 }
 
-func createDeviceRegistry(network *client.Network, chaincodeId string) DeviceRegistryInterface {
+// CreateDeviceRegistry the default factory for creating device registries
+func CreateDeviceRegistry(network *client.Network, chaincodeId string) DeviceRegistryInterface {
 	return &DeviceRegistry{
 		contract: &Contract{
 			network:      network,

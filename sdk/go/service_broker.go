@@ -169,7 +169,8 @@ func (r *ServiceBroker) RegisterEvent(options ...client.ChaincodeEventsOption) (
 	return dest, cancel, err
 }
 
-func createServiceBroker(network *client.Network, chaincodeId string) ServiceBrokerInterface {
+// CreateServiceBroker the default factory for creating service brokers
+func CreateServiceBroker(network *client.Network, chaincodeId string) ServiceBrokerInterface {
 	return &ServiceBroker{
 		contract: &Contract{
 			network:      network,

@@ -171,6 +171,13 @@ export default class ServiceRegistry implements ServiceRegistryInterface {
   }
 }
 
+/**
+ * The default factory for creating service registries
+ * 
+ * @param network Hyperledger Fabric network
+ * @param chaincodeId ID/name of the chaincode
+ * @returns The service registry
+ */
 export function createServiceRegistry(network: Network, chaincodeId: string) {
   return new ServiceRegistry(new Contract(network, chaincodeId, 'service_registry'));
 }

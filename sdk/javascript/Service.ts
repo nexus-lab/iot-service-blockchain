@@ -82,10 +82,10 @@ export default class Service {
   }
 
   /**
-   * Create a new device instance from an object
+   * Create a new service instance from an object
    *
-   * @param obj an object that contains the device information
-   * @returns a new device instance
+   * @param obj an object that contains the service information
+   * @returns a new service instance
    */
   static fromObject(obj: { [key: string]: any }): Service {
     return new Service(

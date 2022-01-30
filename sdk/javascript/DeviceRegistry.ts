@@ -82,6 +82,7 @@ export interface DeviceRegistryInterface {
  */
 export default class DeviceRegistry implements DeviceRegistryInterface {
   private utf8Decoder: TextDecoder;
+
   /**
    * @param contract smart contract
    */
@@ -158,6 +159,13 @@ export default class DeviceRegistry implements DeviceRegistryInterface {
   }
 }
 
+/**
+ * The default factory for creating device registries
+ * 
+ * @param network Hyperledger Fabric network
+ * @param chaincodeId ID/name of the chaincode
+ * @returns The device registry
+ */
 export function createDeviceRegistry(network: Network, chaincodeId: string) {
   return new DeviceRegistry(new Contract(network, chaincodeId, 'device_registry'));
 }

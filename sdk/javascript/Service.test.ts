@@ -69,6 +69,9 @@ test('service.validate()', () => {
   service.organizationId = 'org1';
 
   expect(() => service.validate()).toThrow(/service version/);
+  service.version = -1.5;
+
+  expect(() => service.validate()).toThrow(/positive integer/);
   service.version = 1;
 
   expect(() => service.validate()).toThrow(/last update time/);

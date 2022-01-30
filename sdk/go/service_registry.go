@@ -147,7 +147,8 @@ func (r *ServiceRegistry) RegisterEvent(options ...client.ChaincodeEventsOption)
 	return dest, cancel, err
 }
 
-func createServiceRegistry(network *client.Network, chaincodeId string) ServiceRegistryInterface {
+// CreateServiceRegistry the default factory for creating service registries
+func CreateServiceRegistry(network *client.Network, chaincodeId string) ServiceRegistryInterface {
 	return &ServiceRegistry{
 		contract: &Contract{
 			network:      network,

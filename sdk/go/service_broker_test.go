@@ -139,7 +139,7 @@ func (s *ServiceBrokerTestSuite) TestRegisterEvent() {
 			}
 		}
 
-		for i := 0; i < 2; i++ {
+		for i := 2; i < 4; i++ {
 			data, _ := (&common.ServiceResponse{RequestId: fmt.Sprintf("request%d", i)}).Serialize()
 			eventChannel <- &client.ChaincodeEvent{
 				EventName: fmt.Sprintf("request://org%d/device%d/service%d/request%d/respond", i, i, i, i),
@@ -147,7 +147,7 @@ func (s *ServiceBrokerTestSuite) TestRegisterEvent() {
 			}
 		}
 
-		for i := 0; i < 2; i++ {
+		for i := 4; i < 6; i++ {
 			eventChannel <- &client.ChaincodeEvent{
 				EventName: fmt.Sprintf("request://org%d/device%d/service%d/request%d/remove", i, i, i, i),
 				Payload:   []byte(fmt.Sprintf("request%d", i)),
@@ -166,36 +166,25 @@ func (s *ServiceBrokerTestSuite) TestRegisterEvent() {
 	assert.Nil(s.T(), err, "should return no error")
 	assert.IsType(s.T(), *new(context.CancelFunc), cancel, "should return correct cancel function")
 
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 6; i++ {
 		event := <-source
-		assert.Equal(s.T(), "request", event.Action, "should return correct action")
 		assert.Equal(s.T(), fmt.Sprintf("org%d", i), event.OrganizationId, "should return correct organization ID")
 		assert.Equal(s.T(), fmt.Sprintf("device%d", i), event.DeviceId, "should return correct device ID")
 		assert.Equal(s.T(), fmt.Sprintf("service%d", i), event.ServiceName, "should return correct service name")
 		assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.RequestId, "should return correct request ID")
-		assert.IsType(s.T(), new(common.ServiceRequest), event.Payload, "should return parsed service request as event payload")
-		assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.Payload.(*common.ServiceRequest).Id, "should return correct event payload")
-	}
 
-	for i := 0; i < 2; i++ {
-		event := <-source
-		assert.Equal(s.T(), "respond", event.Action, "should return correct action")
-		assert.Equal(s.T(), fmt.Sprintf("org%d", i), event.OrganizationId, "should return correct organization ID")
-		assert.Equal(s.T(), fmt.Sprintf("device%d", i), event.DeviceId, "should return correct device ID")
-		assert.Equal(s.T(), fmt.Sprintf("service%d", i), event.ServiceName, "should return correct service name")
-		assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.RequestId, "should return correct request ID")
-		assert.IsType(s.T(), new(common.ServiceResponse), event.Payload, "should return parsed service request as event payload")
-		assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.Payload.(*common.ServiceResponse).RequestId, "should return correct event payload")
-	}
-
-	for i := 0; i < 2; i++ {
-		event := <-source
-		assert.Equal(s.T(), "remove", event.Action, "should return correct action")
-		assert.Equal(s.T(), fmt.Sprintf("org%d", i), event.OrganizationId, "should return correct organization ID")
-		assert.Equal(s.T(), fmt.Sprintf("device%d", i), event.DeviceId, "should return correct device ID")
-		assert.Equal(s.T(), fmt.Sprintf("service%d", i), event.ServiceName, "should return correct service name")
-		assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.RequestId, "should return correct request ID")
-		assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.Payload, "should return correct event payload")
+		if i < 2 {
+			assert.Equal(s.T(), "request", event.Action, "should return correct action")
+			assert.IsType(s.T(), new(common.ServiceRequest), event.Payload, "should return parsed service request as event payload")
+			assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.Payload.(*common.ServiceRequest).Id, "should return correct event payload")
+		} else if i < 4 {
+			assert.Equal(s.T(), "respond", event.Action, "should return correct action")
+			assert.IsType(s.T(), new(common.ServiceResponse), event.Payload, "should return parsed service request as event payload")
+			assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.Payload.(*common.ServiceResponse).RequestId, "should return correct event payload")
+		} else {
+			assert.Equal(s.T(), "remove", event.Action, "should return correct action")
+			assert.Equal(s.T(), fmt.Sprintf("request%d", i), event.Payload, "should return correct event payload")
+		}
 	}
 
 	contract = new(MockContract)

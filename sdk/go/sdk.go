@@ -163,9 +163,9 @@ func (s *Sdk) setIdentity(organizationId string, certificate []byte) error {
 }
 
 func (s *Sdk) connectSmartContracts(network *client.Network, chaincodeId string) {
-	s.deviceRegistry = createDeviceRegistry(network, chaincodeId)
-	s.serviceRegistry = createServiceRegistry(network, chaincodeId)
-	s.serviceBroker = createServiceBroker(network, chaincodeId)
+	s.deviceRegistry = CreateDeviceRegistry(network, chaincodeId)
+	s.serviceRegistry = CreateServiceRegistry(network, chaincodeId)
+	s.serviceBroker = CreateServiceBroker(network, chaincodeId)
 }
 
 // GetDeviceId return the device/client ID of the current calling application

@@ -32,9 +32,9 @@ export interface ContractInterface {
  */
 export default class Contract implements ContractInterface {
   /**
-   * @param network
-   * @param chaincodeId
-   * @param contractName
+   * @param network the Hyperledger Fabric network/channel
+   * @param chaincodeId name of the chaincode
+   * @param contractName name of the contract
    */
   constructor(
     private network: Network,
