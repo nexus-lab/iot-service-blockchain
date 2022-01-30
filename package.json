@@ -1,7 +1,7 @@
 {
   "name": "iot-service-blockchain",
   "version": "0.0.1",
-  "description": "Secure Decentralized IoT Service Platform using Consortium Blockchain ",
+  "description": "Secure Decentralized IoT Service Platform using Consortium Blockchain",
   "main": "sdk/javascript/index.js",
   "repository": "https://github.com/nexus-lab/iot-service-blockchain.git",
   "author": "ppoffice <ppoffice@users.noreply.github.com>",

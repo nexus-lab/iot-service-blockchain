@@ -48,7 +48,7 @@ function mapDN(dn: DistinguishedName) {
       map.set(type, []);
     }
 
-    map.get(type)!.push(attribute.value);
+    map.get(type)?.push(attribute.value);
   }
 
   for (const values of map.values()) {
@@ -69,8 +69,8 @@ function formatDN(dn: DistinguishedName) {
   return DN_ORDER.filter((type) => dnMap.has(type))
     .map((type) =>
       dnMap
-        .get(type)!
-        .map((value) => `${type}=${escapeDN(value)}`)
+        .get(type)
+        ?.map((value) => `${type}=${escapeDN(value)}`)
         .join('+'),
     )
     .join(',');
