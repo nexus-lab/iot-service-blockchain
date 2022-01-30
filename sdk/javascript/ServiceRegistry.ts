@@ -173,7 +173,7 @@ export default class ServiceRegistry implements ServiceRegistryInterface {
 
 /**
  * The default factory for creating service registries
- * 
+ *
  * @param network Hyperledger Fabric network
  * @param chaincodeId ID/name of the chaincode
  * @returns The service registry

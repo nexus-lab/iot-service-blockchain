@@ -161,7 +161,7 @@ export default class DeviceRegistry implements DeviceRegistryInterface {
 
 /**
  * The default factory for creating device registries
- * 
+ *
  * @param network Hyperledger Fabric network
  * @param chaincodeId ID/name of the chaincode
  * @returns The device registry

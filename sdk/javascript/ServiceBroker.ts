@@ -214,7 +214,7 @@ export default class ServiceBroker implements ServiceBrokerInterface {
 
 /**
  * The default factory for creating service brokers
- * 
+ *
  * @param network Hyperledger Fabric network
  * @param chaincodeId ID/name of the chaincode
  * @returns The service brokers
