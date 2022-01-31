@@ -111,6 +111,9 @@ public class Sdk {
   /** Close connection to the Hyperledger Fabric gateway */
   public void close() {
     this.gateway.close();
-    this.grpcConnection.shutdown();
+    try {
+      this.grpcConnection.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+    }
   }
 }

@@ -63,8 +63,11 @@ jobs:
           ./tests/scripts/fabric download
           ./tests/scripts/fabric network up
           ./tests/scripts/fabric chaincode deploy
-      # - name: Run tests
-      #   run: go run ./tests/e2e/go/run.go
+      - name: Run tests
+        run: |
+          mvn install
+          cd tests/e2e/java
+          mvn compile exec:java -Dexec.mainClass="com.example.e2e.Run"
       - name: Clean up Hyperledger Fabric network
         run: |
           ./tests/scripts/fabric network down
