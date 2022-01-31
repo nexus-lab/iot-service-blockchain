@@ -9,27 +9,27 @@ import java.util.regex.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** An IoT service request */
+/** An IoT service request. */
 @Data
 @NoArgsConstructor
 public class ServiceRequest {
-  /** Identity of the IoT service request */
+  /** Identity of the IoT service request. */
   private String id;
 
-  /** Time of the IoT service request */
+  /** Time of the IoT service request. */
   private OffsetDateTime time;
 
-  /** Requested IoT service information */
+  /** Requested IoT service information. */
   private Service service;
 
-  /** IoT service request method */
+  /** IoT service request method. */
   private String method;
 
-  /** IoT service request arguments */
+  /** IoT service request arguments. */
   private String[] arguments;
 
   /**
-   * Get components that compose the IoT service request key
+   * Get components that compose the IoT service request key.
    *
    * @return components that compose the IoT service request key
    */
@@ -39,7 +39,7 @@ public class ServiceRequest {
   }
 
   /**
-   * Transform current service request to JSON string
+   * Transform current service request to JSON string.
    *
    * @return JSON representation of the service request
    */
@@ -48,7 +48,7 @@ public class ServiceRequest {
   }
 
   /**
-   * Check if the IoT service request properties are valid
+   * Check if the IoT service request properties are valid.
    *
    * @throws IllegalArgumentException when service request fields are invalid
    */
@@ -80,7 +80,7 @@ public class ServiceRequest {
   }
 
   /**
-   * Create a new service request instance from its JSON representation
+   * Create a new service request instance from its JSON representation.
    *
    * @param data JSON string representing a service request
    * @return a new service request instance
@@ -89,7 +89,10 @@ public class ServiceRequest {
     return Json.deserialize(data, ServiceRequest.class);
   }
 
-  /** Custom JSON serializer that keeps the field order for {@link com.owlike.genson.Genson} */
+  /**
+   * Custom {@link com.owlike.genson.Genson} serializer that keeps the field order for {@link
+   * com.owlike.genson.Genson}.
+   */
   protected static final class Serializer implements com.owlike.genson.Serializer<ServiceRequest> {
     @Override
     public void serialize(ServiceRequest request, ObjectWriter writer, Context ctx)

@@ -5,7 +5,7 @@ import org.hyperledger.fabric.client.CloseableIterator;
 
 /**
  * A class that transform {@link org.hyperledger.fabric.client.CloseableIterator} of one type to
- * {@link org.hyperledger.fabric.client.CloseableIterator} of another type
+ * {@link org.hyperledger.fabric.client.CloseableIterator} of another type.
  */
 public abstract class TransformCloseableIterator<U, V> implements CloseableIterator<V> {
   private final CloseableIterator<U> sourceIterator;
@@ -14,7 +14,12 @@ public abstract class TransformCloseableIterator<U, V> implements CloseableItera
   private boolean isClosed;
   private boolean isChecked;
 
-  /** @param iterator source iterator to be transformed */
+  /**
+   * A class that transform {@link org.hyperledger.fabric.client.CloseableIterator} of one type to
+   * {@link org.hyperledger.fabric.client.CloseableIterator} of another type.
+   *
+   * @param iterator source iterator to be transformed.
+   */
   public TransformCloseableIterator(CloseableIterator<U> iterator) {
     this.sourceIterator = iterator;
   }
@@ -61,7 +66,7 @@ public abstract class TransformCloseableIterator<U, V> implements CloseableItera
   }
 
   /**
-   * Check if the next element of source type can be transformed into the element of target type
+   * Check if the next element of source type can be transformed into the element of target type.
    *
    * @param element next element from the source iterator
    * @return if element can be transformed
@@ -69,7 +74,7 @@ public abstract class TransformCloseableIterator<U, V> implements CloseableItera
   public abstract boolean canTransform(U element);
 
   /**
-   * Transform the next element of source type into the element of target type
+   * Transform the next element of source type into the element of target type.
    *
    * @param element next element from the source iterator
    * @return the transformed element

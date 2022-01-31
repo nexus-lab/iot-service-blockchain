@@ -22,7 +22,9 @@ jobs:
           java-version: '11'
           cache: 'maven'
       - name: Run code style checks
-        run: mvn spotless:check
+        run: |
+          mvn spotless:check
+          mvn checkstyle:check
 
   unit-test:
     name: Unit tests

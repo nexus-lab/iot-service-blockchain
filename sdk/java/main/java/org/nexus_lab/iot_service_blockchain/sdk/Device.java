@@ -7,27 +7,27 @@ import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** An IoT device state */
+/** An IoT device state. */
 @Data
 @NoArgsConstructor
 public class Device {
-  /** Identity of the device */
+  /** Identity of the device. */
   private String id;
 
-  /** Identity of the organization to which the device belongs */
+  /** Identity of the organization to which the device belongs. */
   private String organizationId;
 
-  /** Friendly name of the device */
+  /** Friendly name of the device. */
   private String name;
 
-  /** A brief summary of the device's functions */
+  /** A brief summary of the device's functions. */
   private String description;
 
-  /** The latest time that the device state has been updated */
+  /** The latest time that the device state has been updated. */
   private OffsetDateTime lastUpdateTime;
 
   /**
-   * Get components that compose the device key
+   * Get components that compose the device key.
    *
    * @return components that compose the device key
    */
@@ -37,7 +37,7 @@ public class Device {
   }
 
   /**
-   * Transform current device to JSON string
+   * Transform current device to JSON string.
    *
    * @return JSON representation of the device
    */
@@ -46,7 +46,7 @@ public class Device {
   }
 
   /**
-   * Check if the device properties are valid
+   * Check if the device properties are valid.
    *
    * @throws IllegalArgumentException when device fields are invalid
    */
@@ -67,7 +67,7 @@ public class Device {
   }
 
   /**
-   * Create a new device instance from its JSON representation
+   * Create a new device instance from its JSON representation.
    *
    * @param data JSON string representing a device
    * @return a new device instance
@@ -76,7 +76,10 @@ public class Device {
     return Json.deserialize(data, Device.class);
   }
 
-  /** Custom JSON serializer that keeps the field order for {@link com.owlike.genson.Genson} */
+  /**
+   * Custom {@link com.owlike.genson.Genson} serializer that keeps the field order for {@link
+   * com.owlike.genson.Genson}.
+   */
   protected static final class Serializer implements com.owlike.genson.Serializer<Device> {
     @Override
     public void serialize(Device device, ObjectWriter writer, Context ctx) throws Exception {

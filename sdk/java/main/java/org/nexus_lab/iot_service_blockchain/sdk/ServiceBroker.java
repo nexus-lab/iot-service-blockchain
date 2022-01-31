@@ -13,11 +13,15 @@ import org.hyperledger.fabric.client.EndorseException;
 import org.hyperledger.fabric.client.Network;
 import org.hyperledger.fabric.client.SubmitException;
 
-/** Core utilities for managing IoT service requests and responses on the ledger */
+/** Core utilities for managing IoT service requests and responses on the ledger. */
 public class ServiceBroker implements ServiceBrokerInterface {
   private ContractInterface contract;
 
-  /** @param contract smart contract */
+  /**
+   * Core utilities for managing IoT service requests and responses on the ledger.
+   *
+   * @param contract smart contract
+   */
   public ServiceBroker(ContractInterface contract) {
     this.contract = contract;
   }
@@ -127,7 +131,7 @@ public class ServiceBroker implements ServiceBrokerInterface {
   }
 
   /**
-   * The default factory for creating service brokers
+   * The default factory for creating service brokers.
    *
    * @param network Hyperledger Fabric network
    * @param chaincodeId ID/name of the chaincode

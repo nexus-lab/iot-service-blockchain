@@ -39,7 +39,7 @@ public class App {
     options.setPrivateKey(credentials[1]);
     options.setGatewayPeerEndpoint(PEER_ENDPOINT);
     options.setGatewayPeerServerName(PEER_NAME);
-    options.setGatewayPeerTLSCertificate(credentials[2]);
+    options.setGatewayPeerTlsCertificate(credentials[2]);
     options.setNetworkName("mychannel");
     options.setChaincodeId("iotservice");
 

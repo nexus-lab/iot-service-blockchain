@@ -5,17 +5,18 @@ import com.owlike.genson.stream.ObjectWriter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** A wrapper of a pair of IoT service request and response. */
 @Data
 @NoArgsConstructor
 public class ServiceRequestResponse {
-  /** IoT service request */
+  /** IoT service request. */
   private ServiceRequest request;
 
-  /** IoT service response */
+  /** IoT service response. */
   private ServiceResponse response;
 
   /**
-   * Transform current service request/response pair to JSON string
+   * Transform current service request/response pair to JSON string.
    *
    * @return JSON representation of the service request/response pair
    */
@@ -24,7 +25,7 @@ public class ServiceRequestResponse {
   }
 
   /**
-   * Create a new service request/response pair instance from its JSON representation
+   * Create a new service request/response pair instance from its JSON representation.
    *
    * @param data JSON string representing a service request/response pair
    * @return a new service request/response pair instance
@@ -33,7 +34,10 @@ public class ServiceRequestResponse {
     return Json.deserialize(data, ServiceRequestResponse.class);
   }
 
-  /** Custom JSON serializer that keeps the field order for {@link com.owlike.genson.Genson} */
+  /**
+   * Custom {@link com.owlike.genson.Genson} serializer that keeps the field order for {@link
+   * com.owlike.genson.Genson}.
+   */
   protected static final class Serializer
       implements com.owlike.genson.Serializer<ServiceRequestResponse> {
     @Override

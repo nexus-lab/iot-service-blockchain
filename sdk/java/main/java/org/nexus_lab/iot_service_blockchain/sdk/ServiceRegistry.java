@@ -13,11 +13,15 @@ import org.hyperledger.fabric.client.EndorseException;
 import org.hyperledger.fabric.client.Network;
 import org.hyperledger.fabric.client.SubmitException;
 
-/** Core utilities for managing devices on the ledger */
+/** Core utilities for managing devices on the ledger. */
 public class ServiceRegistry implements ServiceRegistryInterface {
   private ContractInterface contract;
 
-  /** @param contract smart contract */
+  /**
+   * Core utilities for managing devices on the ledger.
+   *
+   * @param contract smart contract
+   */
   public ServiceRegistry(ContractInterface contract) {
     this.contract = contract;
   }
@@ -100,7 +104,7 @@ public class ServiceRegistry implements ServiceRegistryInterface {
   }
 
   /**
-   * The default factory for creating service registries
+   * The default factory for creating service registries.
    *
    * @param network Hyperledger Fabric network
    * @param chaincodeId ID/name of the chaincode

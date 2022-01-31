@@ -23,24 +23,24 @@ import org.hyperledger.fabric.client.identity.Signer;
 import org.hyperledger.fabric.client.identity.Signers;
 import org.hyperledger.fabric.client.identity.X509Identity;
 
-/** The IoT service blockchain sdk */
+/** The IoT service blockchain sdk. */
 public class Sdk {
   private ManagedChannel grpcConnection;
   private Gateway gateway;
 
-  /** The organization ID of the current calling application */
+  /** The organization ID of the current calling application. */
   @Getter private String organizationId;
 
-  /** The device/client ID of the current calling application */
+  /** The device/client ID of the current calling application. */
   @Getter private String deviceId;
 
-  /** The device registry */
+  /** The device registry. */
   @Getter private DeviceRegistryInterface deviceRegistry;
 
-  /** The service registry */
+  /** The service registry. */
   @Getter private ServiceRegistryInterface serviceRegistry;
 
-  /** The service broker */
+  /** The service broker. */
   @Getter private ServiceBrokerInterface serviceBroker;
 
   private static Identity newIdentity(String organizationId, String certificate)
@@ -65,11 +65,13 @@ public class Sdk {
   }
 
   /**
+   * The IoT service blockchain sdk.
+   *
    * @param options SDK initialization options
-   * @throws CertificateException
-   * @throws SSLException
-   * @throws InvalidKeyException
-   * @throws InvalidNameException
+   * @throws CertificateException if client or TLS certificate is invalid
+   * @throws SSLException if TLS certificate is invalid
+   * @throws InvalidKeyException if private key is invalid
+   * @throws InvalidNameException if client certificate does not contain valid identity information
    */
   public Sdk(SdkOptions options)
       throws CertificateException, SSLException, InvalidKeyException, InvalidNameException {
@@ -77,7 +79,7 @@ public class Sdk {
         newGrpcConnection(
             options.getGatewayPeerEndpoint(),
             options.getGatewayPeerServerName(),
-            options.getGatewayPeerTLSCertificate());
+            options.getGatewayPeerTlsCertificate());
 
     Gateway.Builder builder =
         Gateway.newInstance()
@@ -108,12 +110,12 @@ public class Sdk {
     this.serviceBroker = ServiceBroker.create(network, chaincodeId);
   }
 
-  /** Close connection to the Hyperledger Fabric gateway */
+  /** Close connection to the Hyperledger Fabric gateway. */
   public void close() {
     this.gateway.close();
     try {
       this.grpcConnection.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException expected) {
     }
   }
 }

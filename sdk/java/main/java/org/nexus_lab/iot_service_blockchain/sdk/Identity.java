@@ -17,7 +17,7 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
-/** Untility functions for client identity */
+/** Untility functions for client identity. */
 public class Identity {
   private static final String[] DN_ORDER;
   private static final Map<String, String> OID_MAP = new HashMap<>();
@@ -39,11 +39,11 @@ public class Identity {
   }
 
   /**
-   * Parse an X509 certificate from PEM string
+   * Parse an X509 certificate from PEM string.
    *
    * @param certificate PEM-encoded X509 certificate
    * @return parsed X509 certificate
-   * @throws CertificateException
+   * @throws CertificateException if certificate is invalid
    */
   public static X509Certificate parseCertificate(byte[] certificate) throws CertificateException {
     CertificateFactory factory = CertificateFactory.getInstance("X.509");
@@ -102,11 +102,11 @@ public class Identity {
   }
 
   /**
-   * Get unique client ID from client certificate
+   * Get unique client ID from client certificate.
    *
    * @param certificate client X509 certificate
    * @return the unique client ID
-   * @throws InvalidNameException
+   * @throws InvalidNameException if certificate does not contain valid identity information
    */
   public static String getClientId(X509Certificate certificate) throws InvalidNameException {
     String subject = certificate.getSubjectX500Principal().getName(X500Principal.RFC2253, OID_MAP);

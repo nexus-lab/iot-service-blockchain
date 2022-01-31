@@ -4,7 +4,7 @@ import com.owlike.genson.GenericType;
 import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
 
-/** The default JSON serializer and deserializer */
+/** The default JSON serializer and deserializer. */
 public class Json {
   private static final Genson genson =
       new GensonBuilder()

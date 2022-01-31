@@ -87,7 +87,6 @@
   </dependencies>
 
   <build>
-    <scriptSourceDirectory>${project.root}/main/scripts</scriptSourceDirectory>
     <sourceDirectory>${project.root}/main/java</sourceDirectory>
     <testSourceDirectory>${project.root}/test/java</testSourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
@@ -151,6 +150,22 @@
                 <reflowLongStrings>true</reflowLongStrings>
               </googleJavaFormat>
             </java>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.1.2</version>
+          <configuration>
+            <configLocation>checkstyle.xml</configLocation>
+            <sourceDirectories>
+              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+            </sourceDirectories>
+            <encoding>UTF-8</encoding>
+            <consoleOutput>true</consoleOutput>
+            <failsOnError>true</failsOnError>
+            <linkXRef>false</linkXRef>
           </configuration>
         </plugin>
         <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->

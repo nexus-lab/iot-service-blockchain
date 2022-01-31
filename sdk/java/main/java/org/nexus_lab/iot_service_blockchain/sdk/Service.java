@@ -7,30 +7,30 @@ import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** An IoT service state */
+/** An IoT service state. */
 @Data
 @NoArgsConstructor
 public class Service {
-  /** Friendly name of the IoT service */
+  /** Friendly name of the IoT service. */
   private String name;
 
-  /** Identity of the device to which the IoT service belongs */
+  /** Identity of the device to which the IoT service belongs. */
   private String deviceId;
 
-  /** Identity of the organization to which the IoT service belongs */
+  /** Identity of the organization to which the IoT service belongs. */
   private String organizationId;
 
-  /** Version number of the IoT service */
+  /** Version number of the IoT service. */
   private int version;
 
-  /** A brief summary of the service's functions */
+  /** A brief summary of the service's functions. */
   private String description;
 
-  /** The latest time that the service state has been updated */
+  /** The latest time that the service state has been updated. */
   private OffsetDateTime lastUpdateTime;
 
   /**
-   * Get components that compose the service key
+   * Get components that compose the service key.
    *
    * @return components that compose the service key
    */
@@ -40,7 +40,7 @@ public class Service {
   }
 
   /**
-   * Transform current service to JSON string
+   * Transform current service to JSON string.
    *
    * @return JSON representation of the service
    */
@@ -49,7 +49,7 @@ public class Service {
   }
 
   /**
-   * Check if the IoT service properties are valid
+   * Check if the IoT service properties are valid.
    *
    * @throws IllegalArgumentException when service fields are invalid
    */
@@ -76,7 +76,7 @@ public class Service {
   }
 
   /**
-   * Create a new service instance from its JSON representation
+   * Create a new service instance from its JSON representation.
    *
    * @param data JSON string representing a service
    * @return a new service instance
@@ -85,7 +85,10 @@ public class Service {
     return Json.deserialize(data, Service.class);
   }
 
-  /** Custom JSON serializer that keeps the field order for {@link com.owlike.genson.Genson} */
+  /**
+   * Custom {@link com.owlike.genson.Genson} serializer that keeps the field order for {@link
+   * com.owlike.genson.Genson}.
+   */
   protected static final class Serializer implements com.owlike.genson.Serializer<Service> {
     @Override
     public void serialize(Service service, ObjectWriter writer, Context ctx) throws Exception {

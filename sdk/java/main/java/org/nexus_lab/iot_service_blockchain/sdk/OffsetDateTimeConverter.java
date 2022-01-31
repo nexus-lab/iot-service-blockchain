@@ -7,7 +7,10 @@ import com.owlike.genson.stream.ObjectWriter;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
-/** Custom JSON serializer and deserializer for {@link java.time.OffsetDateTime} */
+/**
+ * Custom {@link com.owlike.genson.Genson} serializer and deserializer for {@link
+ * java.time.OffsetDateTime}.
+ */
 public class OffsetDateTimeConverter implements Converter<OffsetDateTime> {
   private static final DateTimeFormatter formatter =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX");

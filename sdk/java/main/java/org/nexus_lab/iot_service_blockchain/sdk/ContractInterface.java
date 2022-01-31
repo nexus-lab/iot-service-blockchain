@@ -8,10 +8,10 @@ import org.hyperledger.fabric.client.CommitStatusException;
 import org.hyperledger.fabric.client.EndorseException;
 import org.hyperledger.fabric.client.SubmitException;
 
-/** The smart contract interface */
+/** The smart contract interface. */
 public interface ContractInterface {
   /**
-   * Submit a transaction to the ledger
+   * Submit a transaction to the ledger.
    *
    * @param name transaction name
    * @param args transaction arguments
@@ -26,7 +26,7 @@ public interface ContractInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Register for chaincode events
+   * Register for chaincode events.
    *
    * @param options chaincode event options
    * @return chaincode events

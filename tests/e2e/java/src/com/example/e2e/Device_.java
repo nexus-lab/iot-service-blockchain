@@ -38,7 +38,7 @@ public class Device_ {
     options.setPrivateKey(credentials[1]);
     options.setGatewayPeerEndpoint(PEER_ENDPOINT);
     options.setGatewayPeerServerName(PEER_NAME);
-    options.setGatewayPeerTLSCertificate(credentials[2]);
+    options.setGatewayPeerTlsCertificate(credentials[2]);
     options.setNetworkName("mychannel");
     options.setChaincodeId("iotservice");
 
@@ -82,7 +82,7 @@ public class Device_ {
     try {
       isb.getDeviceRegistry().get(isb.getOrganizationId(), "invalid_id");
       Utils.fatal(LOGGER, "should return error when device is not found");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
 
     List<Device> devices = isb.getDeviceRegistry().getAll(isb.getOrganizationId());
@@ -139,7 +139,7 @@ public class Device_ {
     try {
       isb.getServiceRegistry().get(isb.getOrganizationId(), isb.getDeviceId(), "invalid_id");
       Utils.fatal(LOGGER, "should return error when service is not found");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
 
     List<Service> actuals =
@@ -257,7 +257,7 @@ public class Device_ {
     try {
       isb.getServiceRegistry().get(isb.getOrganizationId(), isb.getDeviceId(), service.getName());
       Utils.fatal(LOGGER, "should return error when service is already deregistered");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
 
     List<Service> after =

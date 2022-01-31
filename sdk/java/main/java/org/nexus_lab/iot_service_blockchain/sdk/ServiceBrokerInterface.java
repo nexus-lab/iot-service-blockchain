@@ -8,10 +8,10 @@ import org.hyperledger.fabric.client.CommitStatusException;
 import org.hyperledger.fabric.client.EndorseException;
 import org.hyperledger.fabric.client.SubmitException;
 
-/** Interface of core utilities for managing service requests on ledger */
+/** Interface of core utilities for managing service requests on ledger. */
 public interface ServiceBrokerInterface {
   /**
-   * Make a request to an IoT service
+   * Make a request to an IoT service.
    *
    * @param request IoT service request to be sent
    * @throws EndorseException if the endorse invocation fails
@@ -23,7 +23,7 @@ public interface ServiceBrokerInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Respond to an IoT service request
+   * Respond to an IoT service request.
    *
    * @param response IoT service response to be sent
    * @throws EndorseException if the endorse invocation fails
@@ -35,7 +35,7 @@ public interface ServiceBrokerInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Get an IoT service request and its response (if any) by the request ID
+   * Get an IoT service request and its response (if any) by the request ID.
    *
    * @param requestId service request ID
    * @return the service request and its response (if any)
@@ -49,7 +49,7 @@ public interface ServiceBrokerInterface {
 
   /**
    * Get a list of IoT service requests and their responses (if any) by their service organization
-   * ID, service device ID, and service name
+   * ID, service device ID, and service name.
    *
    * @param organizationId organization ID of the requested service
    * @param deviceId device's ID of the requested service
@@ -65,7 +65,7 @@ public interface ServiceBrokerInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Remove a service request and its response (if any) from the ledger
+   * Remove a service request and its response (if any) from the ledger.
    *
    * @param requestId ID of the service request and response to be removed
    * @throws EndorseException if the endorse invocation fails
@@ -77,7 +77,7 @@ public interface ServiceBrokerInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Registers for service request events
+   * Registers for service request events.
    *
    * @param options chaincode event options
    * @return an async iterable of the events

@@ -8,10 +8,10 @@ import org.hyperledger.fabric.client.CommitStatusException;
 import org.hyperledger.fabric.client.EndorseException;
 import org.hyperledger.fabric.client.SubmitException;
 
-/** Interface of core utilities for managing devices on the ledger */
+/** Interface of core utilities for managing devices on the ledger. */
 public interface DeviceRegistryInterface {
   /**
-   * Create or update a device in the ledger
+   * Create or update a device in the ledger.
    *
    * @param device device to be created or updated
    * @throws EndorseException if the endorse invocation fails
@@ -23,7 +23,7 @@ public interface DeviceRegistryInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Get a device by its organization ID and device ID
+   * Get a device by its organization ID and device ID.
    *
    * @param organizationId device's organization ID
    * @param deviceId device's ID
@@ -37,7 +37,7 @@ public interface DeviceRegistryInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Get a list of devices by their organization ID
+   * Get a list of devices by their organization ID.
    *
    * @param organizationId devices' organization ID
    * @return all devices of the organization
@@ -50,7 +50,7 @@ public interface DeviceRegistryInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Remove a device from the ledger
+   * Remove a device from the ledger.
    *
    * @param device the device to be removed
    * @throws EndorseException if the endorse invocation fails
@@ -62,7 +62,7 @@ public interface DeviceRegistryInterface {
       throws EndorseException, SubmitException, CommitStatusException, CommitException;
 
   /**
-   * Registers for device registry events
+   * Registers for device registry events.
    *
    * @param options chaincode event options
    * @return an async iterable of the events

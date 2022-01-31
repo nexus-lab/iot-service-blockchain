@@ -10,16 +10,16 @@ import org.hyperledger.fabric.client.EndorseException;
 import org.hyperledger.fabric.client.Network;
 import org.hyperledger.fabric.client.SubmitException;
 
-/** Default implementation of the smart contract interface */
+/** Default implementation of the smart contract interface. */
 @RequiredArgsConstructor
 public class Contract implements ContractInterface {
-  /** The Hyperledger Fabric network/channel */
+  /** The Hyperledger Fabric network/channel. */
   private final Network network;
 
-  /** Name of the chaincode */
+  /** Name of the chaincode. */
   private final String chaincodeId;
 
-  /** Name of the contract */
+  /** Name of the contract. */
   private final String contractName;
 
   @Override
