@@ -31,9 +31,21 @@ define services of their devices, and request services from IoT devices.
 
 - Java SDK
 
-  The IoT Service Blockchain Java SDK can be installed from [JitPack](https://gitpack.io).
-  Visit [https://jitpack.io/#nexus-lab/iot-service-blockchain](https://jitpack.io/#nexus-lab/iot-service-blockchain)
-  for more details.
+  To install the Java SDK of IoT Service Blockchain, you will first need to authenticate
+  to GitHub Packages.
+  Follow [Authenticating to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages)
+  for more information.
+  Then, add this package as a dependency to your `pom.xml`:
+
+  ```xml
+  <dependency>
+    <groupId>org.nexus-lab.iot-service-blockchain</groupId>
+    <artifactId>sdk</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </dependency> 
+  ```
+
+  Finally, run `mvn install` to complete the installation.
   Also, refer to [`tests/e2e/java`](tests/e2e/java) for usage examples of the Java SDK.
 
 - JavaScript SDK
