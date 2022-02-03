@@ -42,9 +42,8 @@ define services of their devices, and request services from IoT devices.
   to GitHub Packages.
   Follow [Authenticating to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages)
   for more information.
-  Then, follow [Installing a package](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package) 
-  to set up `.npmrc` file to ask your package manager to search for this package on the GitHub
-  Package repository.
+  Then, set up the `.npmrc` file following [Installing a package](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package)
+  to let your package manager search for this package on the GitHub Package repository.
   Finally, run the following command to install the SDK:
 
   ```shell

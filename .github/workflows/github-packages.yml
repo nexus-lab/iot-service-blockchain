@@ -9,6 +9,23 @@ permissions:
   packages: write
 
 jobs:
+  java:
+    name: Publish Java SDK Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+          cache: 'maven'
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   javascript:
     name: Publish JavaScript SDK Package
     runs-on: ubuntu-latest
