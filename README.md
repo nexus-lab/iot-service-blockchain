@@ -36,29 +36,23 @@ define services of their devices, and request services from IoT devices.
   for more details.
   Also, refer to [`tests/e2e/java`](tests/e2e/java) for usage examples of the Java SDK.
 
-- JavaScript/TypeScript SDK
+- JavaScript SDK
 
-  To install the TypeScript SDK of IoT Service Blockchain, run:
-
-  ```shell
-  npm install git+https://github.com/nexus-lab/iot-service-blockchain.git
-  ```
-
-  If using JavaScript SDK, clone this repository and install the dependencies using:
-
-  ```shell
-  npm install
-  ```
-
-  And build JavaScript SDK with:
+  To install the JavaScript SDK of IoT Service Blockchain, you will first need to authenticate
+  to GitHub Packages.
+  Follow [Authenticating to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages)
+  for more information.
+  Then, follow [Installing a package](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package) 
+  to set up `.npmrc` file to ask your package manager to search for this package on the GitHub
+  Package repository.
+  Finally, run the following command to install the SDK:
 
   ```shell
-  npm run build
+  npm install @nexus-lab/iot-service-blockchain@0.0.1
   ```
 
-  Then, you can import the SDK files using relative paths.
   Also, refer to [`tests/e2e/javascript`](tests/e2e/javascript) for usage examples of the
-  JavaScript/TypeScript SDK.
+  JavaScript SDK.
 
 ## Testing
 
@@ -87,7 +81,7 @@ define services of their devices, and request services from IoT devices.
   mvn test
   ```
 
-- JavaScript/TypeScript SDK
+- JavaScript SDK
 
   First, install the dependencies:
 
