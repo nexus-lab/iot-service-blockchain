@@ -154,7 +154,9 @@ dist
 
 # TypeScript build files
 sdk/javascript/**/*.js
+sdk/javascript/**/*.d.ts
 tests/e2e/javascript/**/*.js
+tests/e2e/javascript/**/*.d.ts
 
 # Maven build files
 target/

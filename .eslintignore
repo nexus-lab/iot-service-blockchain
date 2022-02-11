@@ -1,0 +1,2 @@
+sdk/javascript/**/*.d.ts
+tests/e2e/javascript/**/*.d.ts
