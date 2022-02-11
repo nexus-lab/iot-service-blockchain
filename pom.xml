@@ -5,7 +5,7 @@
 
   <groupId>org.nexus-lab.iot-service-blockchain</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
 
   <name>sdk</name>
   <description>

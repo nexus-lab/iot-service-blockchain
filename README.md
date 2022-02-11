@@ -41,7 +41,7 @@ define services of their devices, and request services from IoT devices.
   <dependency>
     <groupId>org.nexus-lab.iot-service-blockchain</groupId>
     <artifactId>sdk</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
   </dependency> 
   ```
 
@@ -59,7 +59,7 @@ define services of their devices, and request services from IoT devices.
   Finally, run the following command to install the SDK:
 
   ```shell
-  npm install @nexus-lab/iot-service-blockchain@0.0.1
+  npm install @nexus-lab/iot-service-blockchain@0.0.2
   ```
 
   Also, refer to [`tests/e2e/javascript`](tests/e2e/javascript) for usage examples of the
