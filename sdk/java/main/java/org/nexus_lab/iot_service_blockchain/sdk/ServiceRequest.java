@@ -74,6 +74,9 @@ public class ServiceRequest {
     if (this.method == null || this.method.isEmpty()) {
       throw new IllegalArgumentException("missing request method in request definition");
     }
+    if (this.arguments == null) {
+      throw new IllegalArgumentException("request arguments cannot be null in request definition");
+    }
     if (this.time == null || (this.time.toEpochSecond() == 0 && this.time.getNano() == 0)) {
       throw new IllegalArgumentException("missing request time in request definition");
     }

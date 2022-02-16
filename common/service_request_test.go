@@ -74,6 +74,10 @@ func (s *ServiceRequestTestSuite) TestValidate() {
 	assert.Regexp(s.T(), "request method", request.Validate().Error())
 	request.Method = "GET"
 
+	assert.Error(s.T(), request.Validate(), "should error on null argument list")
+	assert.Regexp(s.T(), "request arguments", request.Validate().Error())
+	request.Arguments = make([]string, 0)
+
 	assert.Error(s.T(), request.Validate(), "should error on empty last update time")
 	assert.Regexp(s.T(), "request time", request.Validate().Error())
 	updateTime, _ := time.Parse(time.RFC3339, "2021-12-12T17:34:00-05:00")

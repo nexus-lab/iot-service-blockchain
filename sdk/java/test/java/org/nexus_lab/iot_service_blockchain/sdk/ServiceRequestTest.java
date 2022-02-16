@@ -80,6 +80,10 @@ public class ServiceRequestTest {
     request.setMethod("GET");
 
     exception = assertThrows(IllegalArgumentException.class, () -> request.validate());
+    assertTrue(exception.getMessage().contains("request arguments"));
+    request.setArguments(new String[0]);
+
+    exception = assertThrows(IllegalArgumentException.class, () -> request.validate());
     assertTrue(exception.getMessage().contains("request time"));
     request.setTime(OffsetDateTime.parse("2021-12-12T17:34:00-05:00"));
 

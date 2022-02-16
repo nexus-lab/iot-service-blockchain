@@ -47,6 +47,9 @@ func (r *ServiceRequest) Validate() error {
 	if r.Method == "" {
 		return fmt.Errorf("missing request method in request definition")
 	}
+	if r.Arguments == nil {
+		return fmt.Errorf("request arguments cannot be null in request definition")
+	}
 	if r.Time.IsZero() {
 		return fmt.Errorf("missing request time in request definition")
 	}
