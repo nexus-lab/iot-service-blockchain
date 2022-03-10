@@ -167,11 +167,14 @@ async function checkAndRemoveRequests(isb: Sdk) {
 
   const pair = before[0];
   await isb.getServiceBroker().get(pair.request.id);
-  if (pair.request.id !== pair.response.requestId) {
-    fatal(`request and response ID mismatch, ${pair.request.id} != ${pair.response.requestId}`);
-  }
+  
+  if (pair.response?.requestId) {
+    if (pair.request.id !== pair.response?.requestId) {
+      fatal(`request and response ID mismatch, ${pair.request.id} != ${pair.response?.requestId}`);
+    }
 
-  await isb.getServiceBroker().remove(pair.request.id);
+    await isb.getServiceBroker().remove(pair.request.id);
+  }
 
   const after = await isb
     .getServiceBroker()

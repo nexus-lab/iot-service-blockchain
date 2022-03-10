@@ -9,7 +9,7 @@ export default class ServiceRequestResponse {
    * @param request IoT service request
    * @param response IoT service response
    */
-  constructor(public request: ServiceRequest, public response: ServiceResponse) {}
+  constructor(public request: ServiceRequest, public response: ServiceResponse | null) {}
 
   /**
    * Transform current service request/response pair to a plain object
@@ -19,7 +19,7 @@ export default class ServiceRequestResponse {
   toObject(): { [key: string]: any } {
     return {
       request: this.request.toObject(),
-      response: this.response.toObject(),
+      response: this.response?.toObject() ?? null,
     };
   }
 
@@ -41,7 +41,7 @@ export default class ServiceRequestResponse {
   static fromObject(obj: { [key: string]: any }): ServiceRequestResponse {
     return new ServiceRequestResponse(
       ServiceRequest.fromObject(obj.request),
-      ServiceResponse.fromObject(obj.response),
+      obj.response ? ServiceResponse.fromObject(obj.response) : null,
     );
   }
 
