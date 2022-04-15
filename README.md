@@ -59,7 +59,7 @@ define services of their devices, and request services from IoT devices.
   Finally, run the following command to install the SDK:
 
   ```shell
-  npm install @nexus-lab/iot-service-blockchain@0.0.4
+  npm install @nexus-lab/iot-service-blockchain@0.0.5
   ```
 
   Also, refer to [`tests/e2e/javascript`](tests/e2e/javascript) for usage examples of the
