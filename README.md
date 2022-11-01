@@ -173,3 +173,23 @@ us.
 ## License
 
 This project is licensed under the GPL v3 License - see [LICENSE](LICENSE) for details.
+
+
+## Reference
+
+If this work is helpful to you, please consider citing the following article:
+
+```bibtex
+@Article{s22218186,
+  AUTHOR = {Zhang, Ruipeng and Xu, Chen and Xie, Mengjun},
+  TITLE = {Secure Decentralized IoT Service Platform Using Consortium Blockchain},
+  JOURNAL = {Sensors},
+  VOLUME = {22},
+  YEAR = {2022},
+  NUMBER = {21},
+  ARTICLE-NUMBER = {8186},
+  URL = {https://www.mdpi.com/1424-8220/22/21/8186},
+  ISSN = {1424-8220},
+  DOI = {10.3390/s22218186}
+}
+```
